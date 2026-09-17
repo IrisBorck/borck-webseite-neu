@@ -1,0 +1,8 @@
+---
+interface Props { stem: string; alt: string; class?: string; eager?: boolean; sizes?: string; }
+const { stem, alt, class: className = '', eager = false, sizes = '(max-width: 700px) 100vw, 50vw' } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const heights: Record<string, number> = { 'saphir-living': 768, 'rubin-living': 576, 'opal-living': 683, 'tuerkis-dining': 675, 'topas-living-view': 683, 'bernstein-living-terrace': 576, 'smaragd-living': 768, 'topas-sea-view': 576, 'iris-mia': 1024 };
+const sources = `${base}/images/${stem}-640.webp 640w, ${base}/images/${stem}-1024.webp 1024w${stem === 'topas-sea-view' ? `, ${base}/images/${stem}-1600.webp 1600w` : ''}`;
+---
+<img class={className} src={`${base}/images/${stem}-1024.webp`} srcset={sources} sizes={sizes} alt={alt} width="1024" height={heights[stem] || 683} loading={eager ? 'eager' : 'lazy'} decoding="async" fetchpriority={eager ? 'high' : 'auto'} />
