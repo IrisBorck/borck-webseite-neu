@@ -1,5 +1,7 @@
-name: Vorschau manuell auf GitHub Pages veröffentlichen
+name: Startseiten-Vorschau auf GitHub Pages veröffentlichen
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read

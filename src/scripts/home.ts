@@ -2,7 +2,7 @@ const nav = document.querySelector<HTMLElement>('#navigation')!;
 const menu = document.querySelector<HTMLButtonElement>('.menu-toggle')!;
 function closeMenu() { nav.classList.remove('open'); menu.setAttribute('aria-expanded', 'false'); menu.setAttribute('aria-label', 'Menü öffnen'); }
 menu.addEventListener('click', () => { const open = !nav.classList.contains('open'); nav.classList.toggle('open', open); menu.setAttribute('aria-expanded', String(open)); menu.setAttribute('aria-label', open ? 'Menü schließen' : 'Menü öffnen'); });
-nav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+nav.querySelectorAll('a, [data-open]').forEach(a => a.addEventListener('click', closeMenu));
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && nav.classList.contains('open')) { closeMenu(); menu.focus(); } });
 window.matchMedia('(min-width: 901px)').addEventListener('change', closeMenu);
 
@@ -13,7 +13,7 @@ function filterApartments(filter: string, minGuests = 0) {
   let count = 0;
   cards.forEach(card => {
     const guests = Number(card.dataset.guests);
-    const fits = minGuests > 0 ? guests >= minGuests : filter === 'zwei' ? guests === 2 : filter === 'familie' ? guests >= 4 : ['terrasse', 'balkon'].includes(filter) ? card.dataset.type === filter : true;
+    const fits = minGuests > 0 ? guests >= minGuests : filter === 'zwei' ? guests <= 2 : filter === 'vier' ? guests <= 4 : filter === 'fuenf' ? guests <= 5 : ['terrasse', 'balkon'].includes(filter) ? card.dataset.type === filter : true;
     card.hidden = !fits; if (fits) count++;
   });
   filterButtons.forEach(b => b.setAttribute('aria-pressed', String(!minGuests && b.dataset.filter === filter)));

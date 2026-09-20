@@ -1,0 +1,106 @@
+[
+  {
+    "@type": "Question",
+    "name": "Ist Direktbuchung möglich?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "<p class=\"rteBlock\"><strong>Ja – ganz unkompliziert</strong> und <strong>ohne Portalgebühren</strong>. Du kannst die Verfügbarkeit direkt auf der Website prüfen und online buchen. <strong>Wenn du Fragen hast, ruf gern kurz an – ich helfe sofort weiter: 0172 7952082.</strong></p>"
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "Wie und wann muss ich bezahlen?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "<p>Du kannst <strong>per Überweisung oder per Kreditkarte</strong> bezahlen.</p><p>Bei einer <strong>Überweisung</strong> kannst du entweder den <strong>gesamten Reisepreis auf einmal</strong> zahlen oder zunächst eine <strong>Anzahlung von 50 € innerhalb von 7 Tagen nach der Buchungsbestätigung</strong> leisten. Der <strong>Restbetrag ist spätestens 30 Tage vor Anreise</strong> fällig.</p><p>Bei einer <strong>Kreditkartenzahlung</strong> wird der <strong>gesamte Reisepreis bei der Buchung</strong> bezahlt.</p><p>Bei <strong>kurzfristigen Buchungen innerhalb von 30 Tagen vor Anreise</strong> ist der <strong>Gesamtbetrag sofort fällig</strong>.</p>"
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "Kann ich meine Bettwäsche und Handtücher selbst mitbringen?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "<p class=\"rteBlock\">Ja, sehr gern – du kannst <strong>eigene Bettwäsche und Handtücher</strong> mitbringen.</p><p class=\"rteBlock\">Wenn du lieber <strong>bezogene Betten</strong> und <strong>Handtücher</strong> bei Ankunft möchtest, kannst du das optional dazubuchen:</p><ul class=\"rteBlock defaultList\"><li><strong>Bettwäsche:</strong> 12,00 € pro Person</li><li><strong>Handtücher:</strong> 9,00 € pro Satz</li></ul>"
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "Sind die Wohnungen für Selbstversorger geeignet?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "<p class=\"rteBlock\">Ja. <strong>Alle Apartments haben eine voll ausgestattete Küche</strong> – ideal zum Kochen und für einen entspannten Urlaub als Selbstversorger.</p>"
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "Können wir als Reisegruppe buchen?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "<p class=\"rteBlock\">Ja, das ist möglich. Insgesamt können <strong>bis zu 25 Personen</strong> übernachten.</p><p class=\"rteBlock\">Bitte beachte: Von den <strong>25 Betten</strong> sind <strong>8 Etagenbetten.</strong></p>"
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "Wo bekomme ich die Kurkarten/Gästekarten?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "<p class=\"rteBlock\">Die <strong>Gästekarten (Kurkarte)</strong> werden vom Haus Aquamarin ausgestellt und liegen bei Ankunft <strong>im Apartment bereit</strong>.</p>"
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "Sind Hunde erlaubt?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "<p class=\"rteBlock\">Ja – <strong>Hunde sind herzlich willkommen.</strong></p><p class=\"rteBlock\">Der erste Hund kostet<strong> 46 € pro Buchung</strong>, ein <strong>zweiter Hund 23 €</strong>.</p>"
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "Hat jedes Apartment Balkon oder Terrasse?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "<p class=\"rteBlock\">Ja -  <strong>jede Wohnung hat Balkon oder Terrasse.</strong></p>"
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "Wann ist An- und Abreise?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "<p class=\"rteBlock\"><strong>Anreise ab 15:00 Uhr, Abreise bis 10:00 Uhr.</strong></p><p class=\"rteBlock\">Andere Zeiten sind <strong>nach Absprache</strong> möglich (je nach Belegung).</p>"
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "Kann ich auch spät anreisen?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "<p>Die reguläre Anreise ist <strong>ab 15:00 Uhr</strong> möglich. Dank flexibler Schlüsselübergabe kannst du <strong>auch spät am Abend</strong> anreisen.</p>"
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "Ist das Haus Aquamarin familienfreundlich?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "<p class=\"rteBlock\">Ja, absolut. Das Haus ist fa<strong>milien- und kinderfreundlich </strong>– mit praktischer Aufteilung, viel Platz und kurzen Wegen, z. B. zur Familienlagune Perlebucht.</p><p class=\"rteBlock\">Wenn du etwas Spezielles brauchst, sag kurz Bescheid – dann kann ich es bestmöglich vorbereiten.</p>"
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "Gibt es Parkplätze am Haus?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "<p class=\"rteBlock\">Ja. <strong>Jedes Apartment hat einen eigenen kostenlosen Parkplatz</strong> am Haus.</p>"
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "Wie weit ist es zur Familienlagune Perlebucht?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "<p class=\"rteBlock\">Die Familienlagune Perlebucht ist nur<strong> ein paar Gehminuten</strong> entfernt – ca.<strong> 400 m</strong>.</p>"
+    }
+  }
+]

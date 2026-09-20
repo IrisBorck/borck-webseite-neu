@@ -2,6 +2,8 @@
 interface Props { name: string; class?: string; }
 const { name, class: className = '' } = Astro.props;
 const paths: Record<string, string> = {
+  clock: 'M12 2a10 10 0 1 0 0 20 10 10 0 1 0 0-20M12 6v6l4 2',
+  parking: 'M4 3h16v18H4ZM9 17V7h4a3 3 0 0 1 0 6H9',
   arrow: 'M4 12h16m-6-6 6 6-6 6',
   wave: 'M2 8c3-4 5 4 8 0s5 4 8 0 3 0 4 0M2 15c3-4 5 4 8 0s5 4 8 0 3 0 4 0',
   anchor: 'M12 7v14M5 11H2v4m17-4h3v4M2 14a10 7 0 0 0 20 0M8 10h8M12 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 1 0 0-5',
