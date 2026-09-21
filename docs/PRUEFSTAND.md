@@ -1,36 +1,44 @@
-# Startseiten-Vorschau – Prüfstand 20.09.2026
+# Startseiten-Vorschau – Prüfstand 21.09.2026
 
-Umgesetzt auf dem bestehenden Stand nach dem beigefügten 19-Punkte-Auftrag.
+Gezielte Umsetzung der elf Nachbesserungen auf Commit 4e981884491f33b335ae0da63ccc32e1970a4844.
+Andere Bereiche, Bilder, Farben und FAQ-Inhalte bleiben unverändert.
 
 ## Geprüft
 
 - Produktionsbuild, noindex auf Startseite und 404, alle lokalen Assets und Anker.
-- Originalfotos unverändert, Original-Logo und echte Apartment-/Gastgeberfotos.
-- 320, 390, 768 und 1440 Pixel ohne horizontalen Überlauf.
-- Personen-Obergrenzenfilter: 2 / 6 / 7 Treffer für bis 2 / 4 / 5 Personen.
-- Terrassenfilter: 3 bestätigte Apartments; Topas regulär maximal 5 Personen.
-- Apartmentdialog, Escape, mobiles Menü, mobile Buchungsleiste.
-- Lokale Datumsauswahl über Zeitumstellung: 24.–28.10.2026 ergibt 4 Nächte.
-- Keine Buchung oder Zahlung, keine JavaScript-Fehler oder fehlenden Assets.
-- 13 native FAQ-Accordions und aufklappbare Originalbewertungen.
+- 320, 390, 768, 1024, 1280 und 1440 Pixel ohne horizontalen Überlauf.
+- Sieben Apartmentkarten mit den freigegebenen Beschreibungstexten und jeweils
+  genau vier Merkmals-Kapseln; fett gesetzte Satzanfänge, unveränderte Buttons/Fotos.
+- Türkis: kleiner Balkon und Deichblick; Balkonfilter zeigt vier Apartments.
+- Personenfilter bis 2 / 4 / 5: 2 / 6 / 7 Treffer. Topas maximal fünf Personen.
+- Topas-Kurzansicht und Empfehlung ohne Einschränkung „seitlich“.
+- Telefon-/WhatsApp-Links im Header und mobilen Menü; internationale Nummer im Footer.
+- Abreise am Anreisetag oder davor wird auf den Folgetag korrigiert;
+  Verschieben der Anreise aktualisiert die Abreise. 24.–28.10.2026 ergibt vier Nächte.
+- Alle 13 FAQ-Antworten nach Erstaufruf/Neuladen geschlossen und einzeln aufklappbar.
+- Sechs Bewertungen in freigegebener Reihenfolge; drei Spalten Desktop, zwei Tablet,
+  eine mobil. Volltexte über „Mehr lesen“, zwei weitere Bewertungen aufklappbar.
+- Keine JavaScript-Fehler oder fehlenden Assets in der Chromium-Prüfung.
 
-Die Bilddateien älterer Prüfstände in diesem Ordner sind historische Dokumentation;
-die aktuelle Gestaltung ist auf der GitHub-Pages-Vorschau sichtbar.
-Chromium-Prüfung ersetzt keine vollständige WCAG- oder Endgeräteprüfung.
+## Bewertungsquellen und verbleibender Punkt
 
-## Noch offen, keine erfundenen Ersatzinhalte
+Alle sechs ausgewählten Originaltexte sowie die zusätzlichen Texte von Michaela
+Claussen und Udo Engst sind auf https://www.nordsee-buesum-fewo.de/ vorhanden.
+Die Texte wurden aus der bereits vorhandenen HTML-Quelle übernommen und am
+21.09.2026 mit dem abrufbaren Seiteninhalt abgeglichen. Die Fünf-Sterne-Angaben
+sind im vorhandenen Bewertungsbestand und in den Sternanzeigen der Quelle belegt.
+Keine gekürzte Marvin-Fassung wird als Volltext ausgegeben. Beate und Torsten
+verwenden die ausdrücklich freigegebenen kurzen Anzeigenamen.
 
-- Jessica Götz (Google), Catrin (Airbnb): Originaltexte, Sterne und Quellen fehlen.
-  Torsten wird angezeigt; BeatelementhePiH und Carmen Benaoun sind zusätzlich aufklappbar.
-- Türkis: Die neu bestätigte Aussage zum eigenen Balkon/der eigenen Terrasse
-  widerspricht dem alten Stand. Die konkrete Zuordnung bleibt zu bestätigen;
-  Türkis ist deshalb vorläufig keinem der beiden Außenbereichsfilter zugeordnet.
-- Quelle enthält 13 statt 11 FAQs. Alle 13 bleiben erhalten. Die Gruppenangabe
-  „8 Etagenbetten“ ist unverändert übernommen und zur Klärung markiert.
-- Detailseiten, Über mich, Lage & Anfahrt und Reiseführer fehlen weiterhin bewusst.
-  Startseitenanker und Kurzansichten dienen bis zum beauftragten Ausbau als Ziele.
-- Smoobu/Stripe, Live-Verfügbarkeit, Preis-/Kurabgabenlogik und endgültige Rechtstexte
-  sind noch nicht eingerichtet/geprüft. Keine Änderung produktiver Systeme.
+Punkt 2 bleibt offen: Der aktuelle Google-Gesamtwert konnte am 21.09.2026 nicht
+verlässlich bestätigt werden. Benötigt wird ein aktueller Screenshot des
+Google-Unternehmensprofils mit erkennbarem Haus Aquamarin und Bewertungswert.
+Bis dahin bleibt der vorhandene Google-Link ohne unbestätigten Wert oder Sterneanzeige.
+Keine automatische Aktualisierung, kein Bewertungswidget und keine API eingerichtet.
 
-Quellen: bereitgestellte Fotos und Arbeitsauftrag; FAQ/Original-Google-Zitate
-von https://www.nordsee-buesum-fewo.de/ (nur gelesen am 20.09.2026).
+## Unveränderte Grenzen
+
+Keine Live-Buchung/Zahlung, keine neuen Unterseiten, keine Änderungen an Marvins
+Repository, Produktivwebsite, Domain oder Smoobu. Ursprüngliche Screenshots dieses
+Ordners dokumentieren frühere Stände; maßgeblich ist die aktuelle Pages-Vorschau.
+Die Browserprüfung ist keine vollständige WCAG-/Endgeräte-Zertifizierung.

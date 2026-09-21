@@ -4,7 +4,7 @@ function closeMenu() { nav.classList.remove('open'); menu.setAttribute('aria-exp
 menu.addEventListener('click', () => { const open = !nav.classList.contains('open'); nav.classList.toggle('open', open); menu.setAttribute('aria-expanded', String(open)); menu.setAttribute('aria-label', open ? 'Menü schließen' : 'Menü öffnen'); });
 nav.querySelectorAll('a, [data-open]').forEach(a => a.addEventListener('click', closeMenu));
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && nav.classList.contains('open')) { closeMenu(); menu.focus(); } });
-window.matchMedia('(min-width: 901px)').addEventListener('change', closeMenu);
+window.matchMedia('(min-width: 1281px)').addEventListener('change', closeMenu);
 
 const filterButtons = [...document.querySelectorAll<HTMLButtonElement>('[data-filter]')];
 const cards = [...document.querySelectorAll<HTMLElement>('[data-apartment]')];
@@ -34,13 +34,21 @@ const today = new Date();
 const localDate = (d: Date) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 arrival.min = localDate(today);
 const day = (value: string) => Date.parse(`${value}T12:00:00Z`);
-arrival.addEventListener('change', () => {
-  if (!arrival.value) return;
-  departure.min = new Date(day(arrival.value) + 86400000).toISOString().slice(0,10);
-  if (departure.value && departure.value <= arrival.value) departure.value = departure.min;
+function syncDates() {
+  const minimum = arrival.value || arrival.min;
+  departure.min = new Date(day(minimum) + 86400000).toISOString().slice(0,10);
+  if (departure.value && departure.value < departure.min) departure.value = departure.min;
   departure.setCustomValidity(''); result.hidden = true;
-});
-departure.addEventListener('change', () => { departure.setCustomValidity(''); result.hidden = true; });
+}
+arrival.addEventListener('input', syncDates);
+arrival.addEventListener('change', syncDates);
+departure.addEventListener('input', syncDates);
+departure.addEventListener('change', syncDates);
+syncDates();
+// Reset native restored accordion state on initial load and back/forward navigation.
+function closeFaqs() { document.querySelectorAll<HTMLDetailsElement>('.faq-list details').forEach(d => d.open = false); }
+closeFaqs();
+window.addEventListener('pageshow', () => { closeFaqs(); syncDates(); });
 let chosenApartment = '';
 document.querySelector<HTMLFormElement>('#availability-form')!.addEventListener('submit', e => {
   e.preventDefault();

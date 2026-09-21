@@ -1,18 +1,66 @@
 [
   {
-    "name": "Torsten der freie Redner",
+    "name": "Beate",
     "source": "Google",
-    "excerpt": "Für nur eine Nacht, hat es mir in der mit Liebe eingerichteten \"Bernstein\"Wohnung an nichts gefehlt.",
-    "text": "Für nur eine Nacht, hat es mir in der mit Liebe eingerichteten \"Bernstein\"Wohnung an nichts gefehlt.\nSauber und ordentlich war alles.\nAn viele kleine praktische Dinge wurde in allen Räumen gedacht.\nIris ist eine sehr nette, flexible Gastgeberin. Sie ist jederzeit erreichbar.\nDie Lage ist mega zentral und trotzdem ruhig.\nParkplätze direkt vor der Tür und eine sonnige Terrasse runden den kurzen Besuch ab. Komme gerne wieder."
+    "rating": 5,
+    "text": "Ganz tolle Gastgeberin! Die Wohnung war sehr geräumig, gerade im Wohn-Ess-Bereich, was mit kleinen Kindern sehr angenehm war. Die Wohnung war gut ausgestattet und hatte grundlegend alles, was wir gebraucht haben. Auch ein paar kleine Überraschungen für die Kinder lagen bereit, da hat jemand Erfahrung... ☺️",
+    "excerpt": "Ganz tolle Gastgeberin! Die Wohnung war sehr geräumig, gerade im Wohn-Ess-Bereich, was mit kleinen Kindern sehr angenehm war. Die Wohnung war gut ausgestattet und hatte …",
+    "sourceUrl": "https://www.nordsee-buesum-fewo.de/"
   },
   {
-    "name": "BeatelementhePiH",
+    "name": "Frau Gürtel",
     "source": "Google",
-    "text": "Ganz tolle Gastgeberin! Die Wohnung war sehr geräumig, gerade im Wohn-Ess-Bereich, was mit kleinen Kindern sehr angenehm war. Die Wohnung war gut ausgestattet und hatte grundlegend alles, was wir gebraucht haben. Auch ein paar kleine Überraschungen für die Kinder lagen bereit, da hat jemand Erfahrung... ☺️"
+    "rating": 5,
+    "text": "Ganz ganz tolle Gastgeberin :)\nWir haben uns Pudelwohl gefühlt ! Hunde willkommen ,dicht am Meer (Hundestrand) und Super Ausblick auf den Deich ! Wir kommen auf jedenfall wieder\nFam.Reuter",
+    "excerpt": "Ganz ganz tolle Gastgeberin :)\nWir haben uns Pudelwohl gefühlt ! Hunde willkommen ,dicht am Meer (Hundestrand) und Super Ausblick auf den Deich ! Wir kommen auf …",
+    "sourceUrl": "https://www.nordsee-buesum-fewo.de/"
+  },
+  {
+    "name": "Patrice Rasquin",
+    "source": "Google",
+    "rating": 5,
+    "text": "Sehr nette und herzliche Gastgeber! Für uns 2 Erw. 2 Kinder war die Wohnung voll ausreichend. Es war alles vorhanden.\nWir können das Haus Aquamarin nur weiterempfehlen!\nLG",
+    "excerpt": null,
+    "sourceUrl": "https://www.nordsee-buesum-fewo.de/"
   },
   {
     "name": "Carmen Benaoun",
     "source": "Google",
-    "text": "Sehr saubere Wohnung mit allem was man braucht. Wir und unsere Fellnase wurden so herzlich von der Vermieterin Iris begrüßt, dass man sich sofort wohlfühlt. Vielen lieben Dank nochmal für die schöne Zeit Iris, wir kommen gerne wieder 😊"
+    "rating": 5,
+    "text": "Sehr saubere Wohnung mit allem was man braucht. Wir und unsere Fellnase wurden so herzlich von der Vermieterin Iris begrüßt, dass man sich sofort wohlfühlt. Vielen lieben Dank nochmal für die schöne Zeit Iris, wir kommen gerne wieder 😊",
+    "excerpt": "Sehr saubere Wohnung mit allem was man braucht. Wir und unsere Fellnase wurden so herzlich von der Vermieterin Iris begrüßt, dass man sich sofort wohlfühlt. Vielen …",
+    "sourceUrl": "https://www.nordsee-buesum-fewo.de/"
+  },
+  {
+    "name": "Ilona Graunke-Engler",
+    "source": "Google",
+    "rating": 5,
+    "text": "So einen herzlichen Empfang gibt es heutzutage nur noch selten. Bestens weiterzuempfehlen in jeglicher Hinsicht.",
+    "excerpt": null,
+    "sourceUrl": "https://www.nordsee-buesum-fewo.de/"
+  },
+  {
+    "name": "Torsten",
+    "source": "Google",
+    "rating": 5,
+    "text": "Für nur eine Nacht, hat es mir in der mit Liebe eingerichteten \"Bernstein\"Wohnung an nichts gefehlt.\n Sauber und ordentlich war alles. \nAn viele kleine praktische Dinge wurde in allen Räumen gedacht. \nIris ist eine sehr nette, flexible Gastgeberin. Sie ist jederzeit erreichbar. \nDie Lage ist mega zentral und trotzdem ruhig. \nParkplätze direkt vor der Tür und eine sonnige Terrasse runden den kurzen Besuch ab. Komme gerne wieder.",
+    "excerpt": "Für nur eine Nacht, hat es mir in der mit Liebe eingerichteten \"Bernstein\"Wohnung an nichts gefehlt.\n Sauber und ordentlich war alles. \nAn viele kleine praktische Dinge …",
+    "sourceUrl": "https://www.nordsee-buesum-fewo.de/"
+  },
+  {
+    "name": "Michaela Claussen",
+    "source": "Google",
+    "rating": 5,
+    "text": "Wir waren sehr zufrieden und fühlten uns sehr herzlich willkommen.\n Alles war sehr sauber. Auch unser Hund hat sich gleich wohl gefühlt. Die Vermieterin war immer ansprechbar und sehr unkomplieziert und freundlich.\nVielen lieben Dank",
+    "excerpt": "Wir waren sehr zufrieden und fühlten uns sehr herzlich willkommen.\n Alles war sehr sauber. Auch unser Hund hat sich gleich wohl gefühlt. Die Vermieterin war immer …",
+    "sourceUrl": "https://www.nordsee-buesum-fewo.de/"
+  },
+  {
+    "name": "Udo Engst",
+    "source": "Google",
+    "rating": 5,
+    "text": "Können wir nur Empfehlen, es ist alles sehr sauber und gepflegt. Und die Vermieterin Iris ist sehr freundlich und man kann sie zu jeder Zeit anrufen wenn man was auf dem Herzen hat. Wir waren jetzt das zweite Mal da und wir kommen sehr gerne wieder. Versprochen",
+    "excerpt": "Können wir nur Empfehlen, es ist alles sehr sauber und gepflegt. Und die Vermieterin Iris ist sehr freundlich und man kann sie zu jeder Zeit anrufen wenn man was auf dem …",
+    "sourceUrl": "https://www.nordsee-buesum-fewo.de/"
   }
 ]

@@ -18,6 +18,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         <a href="#apartments">Apartments</a><a href="#lage">Lage &amp; Anfahrt</a><button class="nav-link" data-open="guide-lagune">Reiseführer</button><a href="#iris">Über mich</a><a href="#kontakt">Kontakt</a>
         <details class="languages"><summary aria-label="Sprache: Deutsch">DE <Icon name="chevron" /></summary><div><strong>Deutsch ✓</strong><span>English · folgt</span><span>Nederlands · folgt</span><span>Dansk · folgt</span></div></details>
         <a class="button header-book" href="#verfuegbarkeit">Verfügbarkeit</a>
+        <a class="header-contact" href="tel:+491727952082"><Icon name="phone" /><span>Anrufen</span></a><a class="header-contact" href="https://wa.me/491727952082" target="_blank" rel="noopener noreferrer"><Icon name="whatsapp" /><span>WhatsApp</span></a>
       </nav>
     </div>
   </header>
@@ -58,23 +59,23 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         <div><Icon name="heart" /><h3>Hunde willkommen</h3><p>Hunde sind herzlich willkommen.</p></div>
       </div></div></section>
     <section class="section sand recommendations" aria-labelledby="recommend-title"><div class="container">
-      <div class="recommend-intro"><img src={`${base}/images/haus-aquamarin-aussenansicht.jpeg`} width="1654" height="1115" alt="Außenansicht von Haus Aquamarin mit rotem Dach und Garten" loading="lazy" /><div><p class="eyebrow">SIEBEN WOHNUNGEN · EIN LIEBLINGSPLATZ</p><h2 id="recommend-title">Welche Auszeit passt zu dir?</h2><p>Nicht jede Reise braucht dasselbe Zuhause. Drei schnelle Empfehlungen für den Moment, auf den du dich gerade freust.</p><a class="text-link" href="#apartments">Alle Apartments ansehen <Icon name="arrow" /></a></div></div>
+      <div class="recommend-intro"><img src={`${base}/images/haus-aquamarin-aussenansicht.jpeg`} width="1654" height="1115" alt="Außenansicht von Haus Aquamarin mit rotem Dach und Garten" loading="lazy" /><div><p class="eyebrow">SIEBEN WOHNUNGEN · EIN LIEBLINGSPLATZ</p><h2 id="recommend-title">Welche Auszeit passt zu dir?</h2><p>Nicht jede Reise braucht dasselbe Zuhause. Drei schnelle Empfehlungen für den Moment, auf den du dich gerade freust.</p></div></div>
       <div class="recommend-grid">{[
         {id:'tuerkis', label:'FÜR FAMILIEN', name:'Türkis', text:'Platz für bis zu vier Personen in zwei Schlafzimmern.'},
-        {id:'topas', label:'FÜR WEITBLICK', name:'Topas', text:'Seitlicher Deich- und Meerblick und Platz für bis zu fünf Personen.'},
+        {id:'topas', label:'FÜR WEITBLICK', name:'Topas', text:'Deich- und Meerblick und Platz für bis zu fünf Personen.'},
         {id:'bernstein', label:'FÜR ZWEI', name:'Bernstein', text:'Ein Rückzugsort für zwei mit eigener Terrasse und Gartenblick.'},
       ].map(a => <article><p class="eyebrow">{a.label}</p><h3>{a.name}</h3><p>{a.text}</p><button class="text-link" data-open={`apartment-${a.id}`}>Apartment ansehen <Icon name="arrow" /></button></article>)}</div>
     </div></section>
 
     <section class="section sand" id="apartments" aria-labelledby="apartments-title">
       <div class="container">
-        <div class="section-heading"><p class="eyebrow">UNSERE SIEBEN APARTMENTS</p><h2 id="apartments-title">Alle Apartments auf einen Blick.</h2></div>
+        <div class="section-heading"><h2 id="apartments-title">Alle Apartments auf einen Blick.</h2></div>
         <div class="filters" role="group" aria-label="Apartments filtern"><button data-filter="alle" aria-pressed="true">Alle Apartments</button><button data-filter="zwei" aria-pressed="false">Bis 2 Personen</button><button data-filter="vier" aria-pressed="false">Bis 4 Personen</button><button data-filter="fuenf" aria-pressed="false">Bis 5 Personen</button><button data-filter="terrasse" aria-pressed="false">Mit Terrasse</button><button data-filter="balkon" aria-pressed="false">Mit Balkon</button></div>
         <p id="filter-status" class="filter-status" role="status">7 Apartments zur Auswahl</p>
         <div class="apartment-grid">
           {apartments.map(a => <article class="apartment-card" data-apartment={a.id} data-guests={a.guests} data-type={a.type}>
             <div class="card-photo"><Photo stem={a.image} alt={`Wohnbereich im Apartment ${a.name}`} /><span class="photo-tag">{a.floor}</span></div>
-            <div class="card-copy"><h3>{a.name}</h3><p class="card-subline">{a.line}</p><ul class="facts"><li>{a.size}</li><li>bis {a.guests} Personen</li></ul><p class="outdoor"><Icon name="sun" />{a.outdoor}</p><button class="button" data-open={`apartment-${a.id}`}>Apartment ansehen <Icon name="arrow" /></button></div>
+            <div class="card-copy"><h3>{a.name}</h3><p class="card-subline"><strong>{a.lead}</strong> – {a.line}</p><ul class="feature-capsules" aria-label={`Merkmale von ${a.name}`}><li>{a.size}</li><li>bis {a.guests} Pers.</li><li>{a.outdoorLabel}</li><li>{a.sleeping}</li></ul><button class="button" data-open={`apartment-${a.id}`}>Apartment ansehen <Icon name="arrow" /></button></div>
           </article>)}
         </div>
       </div>
@@ -88,8 +89,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     </div></section>
 
     <section class="section reviews" id="bewertungen" aria-labelledby="reviews-title"><div class="container"><div class="section-heading centered"><p class="eyebrow">WAS NACH DEM URLAUB BLEIBT</p><h2 id="reviews-title">Am schönsten sagen es die Gäste.</h2><p>Persönliche Begegnungen und kleine Lieblingsmomente.</p></div>
-      <div class="review-grid">{reviews.slice(0,1).map(r => <figure class="review-card"><span class="stars" aria-label="5 von 5 Sternen">★★★★★</span><blockquote>{r.excerpt}</blockquote><details><summary>Mehr lesen</summary><p>{r.text}</p></details><figcaption><strong>{r.name}</strong><span>{r.source}</span></figcaption></figure>)}</div>
-      <details class="more-reviews"><summary class="text-link">Weitere Bewertungen anzeigen</summary><div class="review-grid">{reviews.slice(1).map(r => <figure class="review-card"><span class="stars" aria-label="5 von 5 Sternen">★★★★★</span><blockquote>{r.text}</blockquote><figcaption><strong>{r.name}</strong><span>{r.source}</span></figcaption></figure>)}</div></details>
+      <div class="review-grid">{reviews.slice(0,6).map(r => <figure class="review-card"><span class="stars" aria-label={`${r.rating} von 5 Sternen`}>{"★".repeat(r.rating)}</span><blockquote>{r.excerpt || r.text}</blockquote>{r.excerpt && <details><summary>Mehr lesen</summary><p>{r.text}</p></details>}<figcaption><strong>{r.name}</strong><span>{r.source}</span></figcaption></figure>)}</div>
+      <details class="more-reviews"><summary class="text-link">Weitere Bewertungen anzeigen</summary><div class="review-grid">{reviews.slice(6).map(r => <figure class="review-card"><span class="stars" aria-label={`${r.rating} von 5 Sternen`}>{"★".repeat(r.rating)}</span><blockquote>{r.excerpt || r.text}</blockquote>{r.excerpt && <details><summary>Mehr lesen</summary><p>{r.text}</p></details>}<figcaption><strong>{r.name}</strong><span>{r.source}</span></figcaption></figure>)}</div></details>
       <p class="review-source"><a class="text-link" href="https://www.google.com/maps?cid=18045129901455022857" target="_blank" rel="noopener noreferrer">Bewertungen bei Google lesen ↗</a></p>
     </div></section>
 
@@ -100,7 +101,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   <footer id="footer"><div class="container footer-main">
     <div class="footer-brand"><img src={`${base}/images/logo.png`} width="88" height="88" alt="Haus Aquamarin Original-Logo" /><div><strong>Haus Aquamarin</strong><p>Sieben individuelle Ferienapartments in Büsum, nahe der Familienlagune Perlebucht.</p></div></div>
     <div><h3>Navigation</h3><a href="#apartments">Apartments</a><a href="#lage">Lage &amp; Anfahrt</a><button data-open="guide-lagune">Reiseführer</button><a href="#iris">Über mich</a><a href="#kontakt">Kontakt</a></div>
-    <div id="kontakt"><h3>Kontakt</h3><a href="tel:+491727952082">Telefon: 0172 7952082</a><a href="https://wa.me/491727952082" target="_blank" rel="noopener noreferrer">WhatsApp: 0172 7952082</a><a href="mailto:iris_borck@mac.com">iris_borck@mac.com</a><p>Große Tiefe 31<br />25761 Büsum</p></div>
+    <div id="kontakt"><h3>Kontakt</h3><a href="tel:+491727952082">Telefon: +49 172 7952082</a><a href="https://wa.me/491727952082" target="_blank" rel="noopener noreferrer">WhatsApp: +49 172 7952082</a><a href="mailto:iris_borck@mac.com">iris_borck@mac.com</a><p>Große Tiefe 31<br />25761 Büsum</p></div>
     <div><h3>Rechtliches</h3><button data-open="legal-info">Impressum</button><button data-open="privacy-info">Datenschutz</button><button data-open="terms-info">AGB</button></div>
   </div><div class="footer-bottom"><div class="container"><span>© {new Date().getFullYear()} Haus Aquamarin · Startseiten-Vorschau</span><div><button data-open="legal-info">Impressum</button><button data-open="privacy-info">Datenschutz</button><button data-open="terms-info">AGB</button></div></div></div></footer>
   <aside class="mobile-booking" aria-label="Schnell zur Verfügbarkeit" hidden><span>Deine Nordsee-Auszeit<small>Haus Aquamarin</small></span><a class="button" href="#verfuegbarkeit">Verfügbarkeit <Icon name="arrow" /></a></aside>

@@ -47,9 +47,9 @@ Englisch, Niederländisch, Dänisch, vollständige Apartment- und Reiseführerse
 sowie rechtlich geprüfte endgültige Rechtstexte gehören zu späteren Schritten.
 Der Sprachwähler kennzeichnet die noch fehlenden Sprachen ausdrücklich.
 Die echten Google-Bewertungen sind manuell in `src/data/reviews.json` gepflegt.
-Jessica Götz (Google) und Catrin (Airbnb) fehlen als Originalquelle samt Sternen.
-Bis dahin steht Torstens belegte Bewertung im Vordergrund; zwei vorhandene
-Google-Bewertungen sind zusätzlich aufklappbar. Kein Superhost-Platzhalter.
+Sechs ausgewählte Google-Bewertungen stehen direkt sichtbar in zwei Reihen;
+zwei weitere sind aufklappbar. Volltexte stammen aus der bisherigen Website.
+Der aktuelle Google-Gesamtwert ist noch nicht verifiziert; siehe Prüfstand.
 
 ## Bilder und Material
 
@@ -58,8 +58,8 @@ Die beiden neu gelieferten Fotos liegen unverändert als `hero-panorama.jpg` und
 `haus-aquamarin-aussenansicht.jpeg` vor. Gestaltungsreferenzen sind keine Seitenbilder.
 13 FAQs wurden aus der bisherigen öffentlichen Website übernommen; nur die
 beiden ausdrücklich beauftragten Antworten zu später Anreise und Zahlung geändert.
-Türkis: eigener Außenbereich laut neuem Auftrag, konkrete Zuordnung noch offen.
-Bis zur Bestätigung erscheint Türkis in keinem Balkon-/Terrassenfilter.
+Türkis: kleiner eigener Balkon und Deichblick, im Balkonfilter enthalten.
+Topas: Deich- und Meerblick ohne Einschränkung „seitlich“.
 
 Schriftdateien: Fontsource, Manrope / Source Sans 3, jeweils Version 5.3.0;
 Lizenztexte liegen in `public/fonts/`.
