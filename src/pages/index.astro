@@ -30,7 +30,12 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         <p class="hero-lead">Sieben individuelle Ferienapartments in Büsum, <br />ca. 400 m von der Familienlagune Perlebucht entfernt.</p>
         <p>Auch für längere Aufenthalte über mehrere Wochen oder Monate buchbar.</p>
         <div class="actions"><a class="button" href="#verfuegbarkeit">Verfügbarkeit &amp; Preise</a><a class="button secondary" href="#apartments">Apartments ansehen</a></div>
-        <a class="hero-google" href="https://www.google.com/maps?cid=18045129901455022857" target="_blank" rel="noopener noreferrer">Bewertungen bei Google lesen ↗</a>
+        <!-- Feste Angaben laut Screenshot von Iris vom 21.09.2026; keine automatische Aktualisierung. -->
+        <a class="hero-google" href="https://www.google.com/maps?cid=18045129901455022857" target="_blank" rel="noopener noreferrer">
+          <span class="hero-rating-stars" aria-hidden="true">★★★★★</span>
+          <span>Google · <strong>4,6 von 5 Sternen</strong> bei <strong>48 Rezensionen</strong> ↗</span>
+          <small>Stand: 21.09.2026</small>
+        </a>
         <div class="hero-badges"><span><Icon name="check" /> Ohne Portalgebühr</span><span><Icon name="check" /> Direktbuchung</span></div>
       </div></div>
     </section>
@@ -117,3 +122,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   <dialog id="terms-info" aria-labelledby="terms-title"><button class="dialog-close" aria-label="Schließen"><Icon name="close" /></button><div class="dialog-copy"><h2 id="terms-title">Buchungsbedingungen</h2><p>Über diese Vorschau können keine verbindlichen Buchungen abgeschlossen werden. Die endgültigen Buchungsbedingungen und die technische Preisberechnung werden vor Freischaltung des Buchungsbereichs separat abgestimmt.</p><p>Bereits festgelegt: Restzahlung 30 Tage vor Anreise, bei kurzfristiger Buchung innerhalb von 30 Tagen sofort. Die Kurabgabe wird separat abgerechnet.</p></div></dialog>
   <script src="../scripts/home.ts"></script>
 </Layout>
+
+<style>
+  .hero-google { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; width: fit-content; max-width: 100%; }
+  .hero-rating-stars { font-size: 21px; line-height: 1; white-space: nowrap; background: linear-gradient(to right, #c9a24b 92%, rgba(255,255,255,.45) 92%); background-clip: text; -webkit-background-clip: text; color: transparent; }
+  .hero-google small { flex-basis: 100%; font-size: 12px; }
+  @media (forced-colors: active) { .hero-rating-stars { background: none; color: LinkText; } }
+</style>
