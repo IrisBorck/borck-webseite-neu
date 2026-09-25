@@ -1,0 +1,25 @@
+---
+import { taxTariffs, taxRules as r, taxSource, taxNotice, separateTax } from '../../data/visitor-tax.mjs';
+import { euro } from '../../data/booking-policy.mjs';
+const rates = taxTariffs[2026];
+---
+<section aria-labelledby="tax-info-title">
+<h2 id="tax-info-title">Kurabgabe in Büsum</h2><p class="as-of">Stand 2026</p>
+<div class="seasons">
+<section><h3>Hauptsaison</h3><p class="rate"><strong>{euro(rates.high.regular)}</strong> pro Person/Tag</p><p>1. April bis 31. Oktober sowie 25. Dezember bis 7. Januar</p><p><strong>Ermäßigt: {euro(rates.high.reduced)}</strong> pro Person/Tag</p></section>
+<section><h3>Nebensaison</h3><p class="rate"><strong>{euro(rates.low.regular)}</strong> pro Person/Tag</p><p>8. Januar bis 31. März sowie 1. November bis 24. Dezember</p><p><strong>Ermäßigt: {euro(rates.low.reduced)}</strong> pro Person/Tag</p></section>
+</div>
+<ul>
+<li><strong>An- und Abreisetag werden jeweils berechnet.</strong></li>
+<li>Kurabgabepflicht für Gäste <strong>ab {r.adultAge} Jahren</strong>. Kinder und Jugendliche bis einschließlich {r.childMaxAge} Jahre sind befreit.</li>
+<li><strong>Ermäßigte Kurabgabe</strong> bei <strong>GdB {r.reducedGdb} oder höher</strong> oder <strong>GdB mindestens {r.mobilityGdb} mit Merkzeichen G oder aG</strong>.</li>
+<li>Bei entsprechender Berechtigung mit <strong>Merkzeichen B</strong> erhält eine Begleitperson dieselbe Ermäßigung.</li>
+<li>Personen mit <strong>Merkzeichen BL oder H</strong> und jeweils <strong>eine Begleitperson</strong> sind befreit. Für diese Begleitperson ist kein Eintrag im Ausweis erforderlich.</li>
+</ul>
+<p class="separate"><strong>{separateTax}</strong></p>
+<details><summary>Voraussetzungen &amp; längere Aufenthalte</summary><p>Die Ermäßigung bei GdB mindestens 50 mit G/aG gilt nicht bei vollständiger Übernahme der Kurabgabe durch einen anderen Träger. Die Befreiung bei BL/H setzt voraus, dass die Kosten des Aufenthaltes und der Kur vollständig selbst getragen werden. Die erforderlichen Nachweise werden bei der Abrechnung berücksichtigt.</p><p>Pro Kalenderjahr gilt eine Obergrenze von {euro(rates.annual.regular)}, ermäßigt {euro(rates.annual.reduced)} pro Person. Bereits entrichtete Kurabgaben und weitere besondere Befreiungen klärst du bitte mit Iris.</p></details>
+<p class="notice">{taxNotice} <a href={taxSource} target="_blank" rel="noopener noreferrer">Offizielle Angaben der Gemeinde</a></p>
+</section>
+<style>
+h2{margin-bottom:8px}.as-of{font-size:14px;margin-bottom:22px}.seasons{display:grid;grid-template-columns:1fr 1fr;gap:18px}.seasons section{border-top:2px solid var(--green);padding-top:16px}.seasons h3{font-size:19px}.seasons p{font-size:16px;margin-top:10px}.rate strong{font-size:24px}ul{padding-left:22px;margin:22px 0}li{padding-bottom:10px}.separate{padding-block:16px;border-block:1px solid var(--line)}details{margin-top:18px}summary{cursor:pointer;min-height:44px;padding-block:10px;font-weight:600}details p{font-size:15px;margin-top:12px}.notice{font-size:13px;line-height:1.6;margin-top:20px}@media(max-width:420px){.seasons{grid-template-columns:1fr}}
+</style>

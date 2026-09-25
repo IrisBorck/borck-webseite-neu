@@ -1,0 +1,22 @@
+---
+import { bookingPolicy, euro } from '../../data/booking-policy.mjs';
+import { separateTax } from '../../data/visitor-tax.mjs';
+const { apartment } = Astro.props;
+---
+<section class="section booking-section" id="buchung" aria-labelledby="booking-title"><div class="container">
+<div class="booking-intro"><div><p class="eyebrow">Deine Auszeit an der Nordsee</p><h2 id="booking-title">{apartment.name} direkt buchen</h2><p>Wunschzeitraum gefunden? Hier kannst du deine Buchung direkt abschließen.</p></div></div>
+<p class="booking-costs"><strong>Kurzreisezuschlag:</strong> Bei Aufenthalten <strong>unter {bookingPolicy.shortStayBelowNights} Nächten</strong> fällt <strong>einmalig</strong> ein Zuschlag von <strong>{euro(bookingPolicy.shortStayCents)}</strong> an. Ab {bookingPolicy.shortStayBelowNights} Nächten entfällt er.<br /><strong>{separateTax}</strong></p>
+{apartment.showFourNightHint && <p class="four-night-hint">{bookingPolicy.fourNightHint}</p>}
+<details class="booking-disclosure" data-booking>
+<summary class="button" aria-controls="booking-panel"><span class="closed-label">Jetzt buchen</span><span class="open-label">Buchungsmaske schließen</span></summary>
+<div id="booking-panel" class="booking-panel">
+<p class="small-note">Das Buchungsformular wird von Smoobu bereitgestellt. Hier vorgenommene Buchungen sind verbindlich.</p>
+<iframe data-booking-frame data-src={apartment.url} id={`booking-tool-iFrame-apartment${apartment.apartmentId}`} title={`${apartment.name} bei Smoobu buchen`} referrerpolicy="strict-origin-when-cross-origin" height="900"></iframe>
+<p class="small-note">Falls das Formular nicht vollständig angezeigt wird: <a href={apartment.url} target="_blank" rel="noopener noreferrer">Buchungsformular in einem eigenen Fenster öffnen</a>.</p>
+</div>
+</details>
+</div></section>
+<script src="../../scripts/apartment-booking.ts"></script>
+<style>
+.booking-section{background:var(--aqua)}h2{margin-bottom:18px}.booking-costs{margin:26px 0;font-size:16px}.four-night-hint{font-size:15px;margin:18px 0}.booking-disclosure>summary{list-style:none;width:fit-content;cursor:pointer}.booking-disclosure>summary::-webkit-details-marker{display:none}.open-label{display:none}.booking-disclosure[open] .closed-label{display:none}.booking-disclosure[open] .open-label{display:inline}.booking-panel{margin-top:26px;padding:24px;background:white;border:1px solid var(--line);border-radius:16px}.booking-panel iframe{display:block;width:100%;border:0;min-height:400px;margin-block:20px}.small-note{font-size:14px;line-height:1.6}@media(max-width:600px){.booking-panel{padding:16px 0}.booking-panel p{padding-inline:14px}.booking-disclosure>summary{width:100%}}
+</style>

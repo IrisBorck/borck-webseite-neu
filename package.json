@@ -3,11 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22.12.0" },
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "dev": "astro dev --host 0.0.0.0",
-    "build": "astro build && node scripts/check-build.mjs",
+    "build": "astro build && node scripts/check-build.mjs && node scripts/check-saphir.mjs && node scripts/check-visitor-tax.mjs",
     "preview": "astro preview --host 0.0.0.0"
   },
-  "dependencies": { "astro": "7.0.7" }
+  "dependencies": {
+    "astro": "7.0.7",
+    "iframe-resizer": "3.5.16"
+  }
 }
