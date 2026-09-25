@@ -1,8 +1,10 @@
-# Saphir – Umsetzung und offener Abnahmestand, 25.09.2026
+# Saphir – Veröffentlichung und Browserprüfung, 25.09.2026
 
 ## Status
 
-Die beauftragten Änderungen sind implementiert. Build, 32 Berechnungstests und statische Saphir-Prüfungen bestehen. **Noch nicht zur Veröffentlichung freigegeben:** Die abschließende Browserprüfung des geänderten Stands fehlt. Daher wird dieser Stand separat gesichert und nicht auf main veröffentlicht.
+Die Veröffentlichung vor der Browserprüfung wurde durch Iris ausdrücklich freigegeben. Der Stand wurde ausschließlich auf der GitHub-Testwebsite veröffentlicht und dort in einem echten Chromium-Browser geprüft. Build, 32 Berechnungstests und statische Saphir-Prüfungen bestehen.
+
+**Prüfgrenze:** Desktop und reale Browser-Inhaltsfenster mit 320, 375, 390, 430, 820 und 1200 px wurden geprüft. Die schmalen Inhaltsfenster entstehen in einer separaten, nicht verlinkten noindex-Prüfseite (`qa/saphir.html`). Das prüft CSS, JavaScript und verschachtelte Anbieterframes bei wechselnden Breiten. Es ist **kein Test auf einem physischen iPhone oder in iOS Safari**; Touch, iOS-Datumseingabe, virtuelle Tastatur und Safari-spezifische Effekte sind damit nicht abgenommen. Auch ein eigenständiger Screenreader-Lauf wurde nicht durchgeführt; Fokus und zugängliche Namen/Live-Status wurden im Browser geprüft.
 
 Ausgangscommit: `af406cf80bee9a7df9fd02e16a8775deff62baa7`.
 Arbeitsbereich ausschließlich `IrisBorck/borck-webseite-neu`.
@@ -10,7 +12,7 @@ Arbeitsbereich ausschließlich `IrisBorck/borck-webseite-neu`.
 ## Änderungen nach Auftrag
 
 1. Lightbox: sichtbare Bildbeschreibung entfernt. ALT-Texte und Live-Status bleiben; sichtbarer Zähler „1 / 14“. Native Dialogbedienung, Escape, Pfeiltasten und Rückgabe des Fokus an den tatsächlichen Auslöser.
-2. Kalender: vorhandenes öffentliches Smoobu-Widget 133655 bleibt im isolierten iframe. `ResizeObserver` misst die tatsächliche Body-Höhe, `MutationObserver` erfasst nachgeladene Monate. Höhenmeldung via `postMessage`, akzeptiert nur vom konkreten Kalenderfenster und mit plausibler Höhe. Inhaltshöhe statt Viewporthöhe vermeidet ein Wachstum ohne Schrumpfen. Anpassung der Kalenderzellgrößen bei Breitenwechsel; vorhandene Navigation wird beschriftet und per Tastatur bedienbar. Keine künstliche feste Endhöhe und kein Ausblenden abgeschnittener Inhalte. Die reale Scrollfreiheit ist noch visuell zu prüfen.
+2. Kalender: vorhandenes öffentliches Smoobu-Widget 133655 bleibt im isolierten iframe. `ResizeObserver` misst die tatsächliche Body-Höhe, `MutationObserver` erfasst nachgeladene Monate. Höhenmeldung via `postMessage`, akzeptiert nur vom konkreten Kalenderfenster und mit plausibler Höhe. Inhaltshöhe statt Viewporthöhe vermeidet ein Wachstum ohne Schrumpfen. Anpassung der Kalenderzellgrößen bei Breitenwechsel; vorhandene Navigation wird beschriftet und per Tastatur bedienbar. Keine künstliche feste Endhöhe und kein Ausblenden abgeschnittener Inhalte. Die reale Höhe wurde beim Laden sowie bei Monats- und Breitenwechseln im Browser geprüft; sie wächst und schrumpft mit dem Inhalt.
 3. H1 und Faktenzeile bleiben; sechs ausgewählte Vorschauen (Wohnbereich, Wohn-/Essbereich, Küche, Doppelbett, Etagenbett, Bad). Alle vorhandenen 14 Fotos bleiben erreichbar. Hauptbild, Vorschaubilder und „Alle 14 Fotos ansehen“ öffnen den vollständigen Viewer.
 4. Ausstattung mit Produktivseite abgeglichen. Vorhandene vollständige Kategorien bleiben erhalten: Einbauküche, Induktion, Backofen/Mikrowelle, Geschirrspüler, Kühl-/Gefrierfach, Kaffeemaschine, Wasserkocher, Toaster; Doppelbett 180 cm / 2 × 90 cm, Etagenbett, Kissen/Decken; kleines Duschbad und Haartrockner; Terrasse, saisonale Gartenmöbel, Stellplatz, Fahrradgarage, Münzwaschmaschine/-trockner; WLAN, SAT-TV, Grundig DAB+. Optionale Leistungen einschließlich zweitem Hund erhalten. Präzisierungen zum Waschraum und zweiten Hund stammen aus dem bereits bestätigten Repository-Stand, nicht aus anderen Apartments.
 5. Sechs Hauptentfernungen sichtbar, zehn weitere Angaben im HTML-Aufklapper. Lange Anreise-/Umgebungstexte entfernt. Bestehende Lagegrafik und Google-Maps-Link bleiben. „Mehr zu Lage & Anfahrt“ verweist auf den tatsächlichen bestehenden Navigationsort `/borck-webseite-neu/#lage`. Eine eigenständige Lage-Seite existiert im aktuellen Repository nicht; es wurde kein falscher Link angelegt.
@@ -24,7 +26,7 @@ Arbeitsbereich ausschließlich `IrisBorck/borck-webseite-neu`.
 
 Das Originalformular zeigt **zwei optionale Einträge für den Kurzreisezuschlag zu jeweils 85 EUR**. Ob und wann sie tatsächlich berechnet werden, wurde nicht durch eine Buchung geprüft. Dieser Befund wurde nicht in Smoobu korrigiert. Die Betreiberin muss diese vorhandene Konfiguration separat prüfen. Das Originalformular zeigte als Zahlungsart Rechnung/Überweisung; keine neue Zahlungsart wurde ergänzt.
 
-Das Originalformular erschien in diesem Prüf-Browser auf Englisch. Die originale URL wurde unverändert übernommen; keine ungeprüften Sprachparameter ergänzt.
+Das Originalformular erschien in diesem Prüf-Browser auf Englisch. Die originale URL wurde unverändert übernommen; keine ungeprüften Sprachparameter ergänzt. Auf der veröffentlichten deutschen Testseite sind weiterhin unter anderem Arrival, Departure, People, Contact, Optional Extras, Payment method und die Zustimmung auf Englisch. Das Datumsformat lautet MM/DD/YY. Die Maske ist technisch bedienbar, aber sprachlich für eine deutsche Website nicht durchgängig verständlich. Dieser Anbieterbefund bleibt ausdrücklich offen; keine Änderung an Smoobu vorgenommen.
 
 ## Geänderte und neue Dateien
 
@@ -58,18 +60,46 @@ Das Originalformular erschien in diesem Prüf-Browser auf Englisch. Die original
 
 Hauptsaison, Nebensaison, Frühjahr, Herbst, 24./25. Dezember, 7./8. Januar 2026, Sommer-/Winterzeitumstellung, Kind, GdB 80+ in beiden Saisons, GdB 50+ mit G/aG in beiden Saisons, ermäßigte Begleitperson in beiden Saisons, BL/H, befreite Begleitperson, gemischte Gruppe mit Kind, gemischte Gruppe bei Saisonwechsel, fehlende Anreise/Abreise, unmögliches Datum, identische Daten, umgekehrte Daten, keine Personen, negative und gebrochene Personenzahl, unbekannte Kategorie, unbekanntes Jahr, Jahreswechsel in unbekanntes Jahr, unbekanntes Jahr auch bei Befreiung, längerer Aufenthalt mit transparentem Jahresmaximum.
 
-### Noch offene Browserabnahme
+### Browserprüfung der veröffentlichten Website
 
-Der bereitgestellte Cloud-Browser kann den lokalen Vorschau-Server nicht öffnen (`ERR_BLOCKED_BY_CLIENT`). Das Öffnen der lokalen Build-Datei wurde von der Browser-Sicherheitsregel ebenfalls abgewiesen. Dieser Zugriff wurde nicht umgangen. Es wurden daher **keine erfolgreichen Desktop-/iPhone-Tests des geänderten Stands behauptet**.
+| Bereich | Ergebnis |
+| --- | --- |
+| Desktop | 1363 × 936 px Browserfenster; Galerie und Kalender nebeneinander, keine horizontale Überbreite. |
+| Responsive | 320/375/390/430 px sowie 820/1200 px Inhaltsfenster geprüft; Hauptseite ohne horizontalen Überlauf. Klassische Browser-Scrollleisten reduzieren die nutzbare Inhaltsbreite jeweils um 15 px. |
+| Galerie | Genau sechs Vorschau-Schaltflächen. Alle 14 unterschiedlichen Fotos im Viewer durchlaufen, ALT-Texte vorhanden, Zähler und Umlauf 14 → 1 korrekt. Hauptbild und alle sechs Vorschauen öffnen den richtigen Bildindex (1, 2, 8, 9, 11, 12). |
+| Fokus | Pfeiltasten, Vor/Zurück, Escape und Schließen-Schaltfläche geprüft. Fokus kehrt zum tatsächlich verwendeten Auslöser zurück. Tastaturbedienung der Dialogschaltflächen geprüft. |
+| Kalender | Initiales Nachladen, Monatswechsel einschließlich Monat mit sechs Kalenderzeilen, Rückwechsel und Breitenwechsel geprüft. Desktop beispielsweise 809 → 854 px; bei 320 px nach Wechsel 568 → 563 px. Nach abgeschlossener Anpassung passen Inhalt und Frame zusammen; keine festgeschriebene Endhöhe. Tastatur-Enter auf Monatsnavigation funktioniert. |
+| Aufklapper | Optionale Leistungen, weitere Entfernungen, Kurabgaben-Voraussetzungen, Begleitpersonenhinweis und Buchungsmaske lassen sich öffnen/schließen. |
+| Kurabgaben-Rechner | Im Browser Haupt-/Nebensaison, März/April, Oktober/November, 24./25. Dezember und 7./8. Januar geprüft. Gemischte Kategorien und Kind ergeben korrekt 27,20 EUR für 3 Nächte/4 Tage. Mobiler Fall mit befreiter Begleitperson ergibt 16,00 EUR. Änderungen löschen alte Ergebnisse; Zurücksetzen leert Eingaben; Neuladen verwirft die Ermäßigungsauswahl; unbekanntes Jahr gibt keine Summe aus. Fehlende Anreise meldet Fehler und erhält Fokus. |
+| Mobiles Menü / Dialoge | Menü öffnet und schließt, aria-expanded wechselt. Impressum-Dialog mit Escape geschlossen. |
+| Smoobu Laden/Autoheight | Lazy-Frame erst nach Öffnen; dynamische Höhenanpassung beim Laden, Auswahl von Extras, Schließen/Wiederöffnen und Breitenwechsel. Nach Korrektur Desktop z. B. 1542 px Inhalt = 1542 px Frame, nach Entfernen eines Extras 1518 = 1518 px. Finale 320-px-Prüfung: Seite 305/305 px (Client-/Scrollbreite), Anbieterinhalt 321/321 px, nach Extra-Auswahl 2903 px Inhalt bei 2918 px verfügbarer Höhe; kein innerer Überlauf. |
+| Smoobu Auswahl | 10.–15.11.2026, zwei beziehungsweise vier Personen über Kalender/Personenauswahl gesucht; verfügbare Ansicht erreicht. Dies ist eine unverbindliche Verfügbarkeitsabfrage, keine Buchung. |
+| Smoobu Extras | Bettwäsche über Plus/Minus geändert; Betrag reagiert (z. B. 550 + 12 = 562 EUR bei zwei Personen im geprüften Zeitraum). Alle sieben vorhandenen Extra-Zeilen sichtbar. Beide Kurzreisezuschläge bleiben unberührt. Preise sind Momentaufnahmen der Live-Abfrage und keine zugesagten Preise. |
+| Zahlung/Zustimmung/Abschluss | Vorhandene Zahlungsart Invoice (Bank Transfer) auswählbar; Kontaktfelder, Zustimmungsfeld und AGB-/Datenschutzlinks erreichbar. Abschlussknopf „Available - Book now!“ sichtbar und per Tab erreichbar. Keine persönlichen Daten eingetragen, Zustimmung nicht erteilt, Abschlussknopf nicht betätigt. |
+| Smoobu Sprache | Überwiegend Englisch, Extras teilweise Deutsch; MM/DD/YY. Dokumentiert, nicht verändert. |
 
-Noch zu prüfen: Layout bei Desktop/320–430 px/iPhone, Galerie und Fokuswechsel, Kalenderhöhe beim Laden und Monats-/Breitenwechsel, Aufklapper, Rechnerinteraktion und Screenreader-Status, Smoobu-Autoheight, Datums-/Personenauswahl, optionale Leistungen, Zahlungs-/Zustimmungsfelder und Erreichbarkeit des Abschlusses ohne Absenden.
+### Während der Browserprüfung korrigiert
 
-## Veröffentlichung
+1. Lightbox-Schließen-Symbol war weiß auf weiß: Navy-Farbe gesetzt und am veröffentlichten Stand sichtbar nachgeprüft.
+2. Personennummer im Rechner brach auf eine eigene Zeile: Beschriftung zusammengefasst und mobil nachgeprüft.
+3. Smoobu-Elternbibliothek ignorierte Höhenänderungen bis 34 px: Toleranz auf 0 gesetzt. Der zusätzliche innere Scrollbalken nach Extras verschwand in der Desktop-Nachprüfung.
+4. Bei 320 px war der Buchungsrahmen für die minimale Breite des Anbieterformulars zu schmal: nur unter 360 px den äußeren Rahmen bis zum Seitenrand erweitert. Bei Framebreiten unter 340 px zusätzlich 16 px Reserve auf jede gemeldete Inhaltshöhe, damit klassische horizontale/vertikale Scrollleisten sich nicht gegenseitig auslösen. Höhenmeldungen werden ausdrücklich in Zahlen umgewandelt. Nur unter 360 px wird das Anbieterframe auf 95 % skaliert, um seine Mindestbreite einschließlich klassischer Scrollleisten einzupassen. Es bleibt eine dynamische, auch schrumpfende Höhe. Keine CSS-/Sprach-/Konfigurationsänderung innerhalb von Smoobu.
+5. Separate noindex-Prüfansicht mit wählbarer Breite und frischem Seitenabruf ergänzt; kein Link im normalen Website-Menü.
 
-Kein Push auf main und keine Veröffentlichung dieses Stands, da die ausdrücklich verlangte Browserabnahme vor Veröffentlichung offen ist. Die bestehende URL bleibt bis zur Freigabe unverändert:
-https://irisborck.github.io/borck-webseite-neu/apartments/saphir/
+## Veröffentlichung und verbleibende Punkte
 
-Keine Testbuchung, Kalenderbelegung, Gästenachricht, Smoobu-Konfigurationsänderung, Stripe-Anbindung, Änderung der Produktivseite oder an Marvins Projekt. Keine weiteren Apartmentseiten erstellt.
+Testseite: https://irisborck.github.io/borck-webseite-neu/apartments/saphir/
+
+- Erstveröffentlichung über freigegebenen PR #1 / Merge `f6adaab60add1c2f720d0a877b3f63f55c31da10`.
+- Funktionaler Korrekturstand: `f7b235e62faf53832fe324dd2810b253052d41ca`.
+- Prüfansicht aktualisiert: `641721c5b38a0e563a5fcca00a99729c5dbab189`.
+- Der nachfolgende Berichtscommit ändert nur diesen Prüfbericht; sein Hash steht in der Git-Historie und in der Abschlussnachricht.
+
+**Später umzustellen:** „Mehr zu Lage & Anfahrt“ führt für diesen Teststand ausdrücklich freigegeben auf `/borck-webseite-neu/#lage`. Sobald die eigenständige Seite „Lage & Anfahrt“ erstellt ist, muss dieser Link auf sie umgestellt werden.
+
+**Unverändert:** Beide optionalen Kurzreisezuschläge zu jeweils 85 EUR, Smoobu-Einstellungen, Produktivwebsite, Marvin-Projekt und übrige Apartments. Startseite und Apartmentübersicht wurden nach dem Build erneut byteweise mit dem Ausgangscommit verglichen: identisch.
+
+**Nicht durchgeführt:** echte iOS-Safari-/Geräteprüfung und Buchungsabsendung. Keine Testbuchung, Kalenderbelegung, Gästenachricht, Smoobu-Konfigurationsänderung, Stripe-Anbindung oder Produktivveröffentlichung ausgelöst. Keine weiteren Apartmentseiten erstellt.
 
 ## Inhaltsquellen
 
