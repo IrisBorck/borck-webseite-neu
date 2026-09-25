@@ -9,7 +9,8 @@ function showPhoto(index: number) {
   const photo = thumbnails[current];
   for (const img of [mainImage, viewerImage]) { img.src = photo.dataset.src!; img.alt = photo.dataset.alt!; }
   thumbnails.forEach((button, i) => button.setAttribute('aria-pressed', String(i === current)));
-  for (const id of ['gallery-status', 'viewer-status']) document.getElementById(id)!.textContent = `Bild ${current + 1} von ${thumbnails.length}`;
+  document.querySelectorAll('[data-photo-count]').forEach(el => { el.textContent = `Bild ${current + 1} von ${thumbnails.length}`; });
+  document.querySelectorAll('[data-photo-description]').forEach(el => { el.textContent = photo.dataset.alt!; });
   document.getElementById('viewer-description')!.textContent = photo.dataset.alt!;
 }
 thumbnails.forEach((button, i) => button.addEventListener('click', () => showPhoto(i)));

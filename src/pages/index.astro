@@ -15,7 +15,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       <a class="brand" href={`${base}/`} aria-label="Haus Aquamarin – Startseite"><img src={`${base}/images/logo.png`} width="64" height="64" alt="Historisches Logo von Haus Aquamarin" /><span>Haus Aquamarin<small>AN DER FAMILIENLAGUNE · BÜSUM</small></span></a>
       <button class="menu-toggle" type="button" aria-label="Menü öffnen" aria-expanded="false" aria-controls="navigation"><Icon name="menu" /></button>
       <nav id="navigation" aria-label="Hauptnavigation">
-        <a href="#apartments">Apartments</a><a href="#lage">Lage &amp; Anfahrt</a><button class="nav-link" data-open="guide-lagune">Reiseführer</button><a href="#iris">Über mich</a><a href="#kontakt">Kontakt</a>
+        <a href={`${base}/apartments/`}>Apartments</a><a href="#lage">Lage &amp; Anfahrt</a><button class="nav-link" data-open="guide-lagune">Reiseführer</button><a href="#iris">Über mich</a><a href="#kontakt">Kontakt</a>
         <details class="languages"><summary aria-label="Sprache: Deutsch">DE <Icon name="chevron" /></summary><div><strong>Deutsch ✓</strong><span>English · folgt</span><span>Nederlands · folgt</span><span>Dansk · folgt</span></div></details>
         <a class="button header-book" href="#verfuegbarkeit">Verfügbarkeit</a>
         <a class="header-contact" href="tel:+491727952082"><Icon name="phone" /><span>Anrufen</span></a><a class="header-contact" href="https://wa.me/491727952082" target="_blank" rel="noopener noreferrer"><Icon name="whatsapp" /><span>WhatsApp</span></a>
@@ -105,10 +105,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   </main>
   <footer id="footer"><div class="container footer-main">
     <div class="footer-brand"><img src={`${base}/images/logo.png`} width="88" height="88" alt="Haus Aquamarin Original-Logo" /><div><strong>Haus Aquamarin</strong><p>Sieben individuelle Ferienapartments in Büsum, nahe der Familienlagune Perlebucht.</p></div></div>
-    <div><h3>Navigation</h3><a href="#apartments">Apartments</a><a href="#lage">Lage &amp; Anfahrt</a><button data-open="guide-lagune">Reiseführer</button><a href="#iris">Über mich</a><a href="#kontakt">Kontakt</a></div>
+    <div><h3>Navigation</h3><a href={`${base}/apartments/`}>Apartments</a><a href="#lage">Lage &amp; Anfahrt</a><button data-open="guide-lagune">Reiseführer</button><a href="#iris">Über mich</a><a href="#kontakt">Kontakt</a></div>
     <div id="kontakt"><h3>Kontakt</h3><a href="tel:+491727952082">Telefon: +49 172 7952082</a><a href="https://wa.me/491727952082" target="_blank" rel="noopener noreferrer">WhatsApp: +49 172 7952082</a><a href="mailto:iris_borck@mac.com">iris_borck@mac.com</a><p>Große Tiefe 31<br />25761 Büsum</p></div>
     <div><h3>Rechtliches</h3><button data-open="legal-info">Impressum</button><button data-open="privacy-info">Datenschutz</button><button data-open="terms-info">AGB</button></div>
-  </div><div class="footer-bottom"><div class="container"><span>© {new Date().getFullYear()} Haus Aquamarin · Startseiten-Vorschau</span><div><button data-open="legal-info">Impressum</button><button data-open="privacy-info">Datenschutz</button><button data-open="terms-info">AGB</button></div></div></div></footer>
+  </div><div class="footer-bottom"><div class="container"><span>© {new Date().getFullYear()} Haus Aquamarin · Website-Vorschau</span></div></div></footer>
   <aside class="mobile-booking" aria-label="Schnell zur Verfügbarkeit" hidden><span>Deine Nordsee-Auszeit<small>Haus Aquamarin</small></span><a class="button" href="#verfuegbarkeit">Verfügbarkeit <Icon name="arrow" /></a></aside>
 
   {apartments.map(a => <dialog id={`apartment-${a.id}`} aria-labelledby={`title-${a.id}`}><button class="dialog-close" aria-label="Schließen"><Icon name="close" /></button><Photo stem={a.image} alt={`Wohnbereich ${a.name}`} /><div class="dialog-copy"><p class="eyebrow">Dein Apartment im Haus Aquamarin</p><h2 id={`title-${a.id}`}>{a.name}</h2><p>{a.size} · bis {a.guests} Personen · {a.floor}</p><p>{a.note}</p><p><strong>{a.outdoor}</strong></p><a class="button dialog-book" href="#verfuegbarkeit" data-select={a.name}>Reisezeitraum auswählen <Icon name="arrow" /></a><p class="small-note">Apartment-Kurzansicht. Die vollständige Detailseite folgt später.</p></div></dialog>)}

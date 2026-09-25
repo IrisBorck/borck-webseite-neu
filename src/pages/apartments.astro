@@ -6,6 +6,8 @@ import Dialogs from '../components/ApartmentDialogs.astro';
 import Icon from '../components/Icon.astro';
 import Photo from '../components/Photo.astro';
 import { apartments } from '../data/home';
+import imageAlts from '../data/apartment-image-alts.json';
+const altFor = (id: string) => imageAlts[id as keyof typeof imageAlts];
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 <Layout title="Apartments · Haus Aquamarin in Büsum">
@@ -15,16 +17,18 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 <main id="inhalt" class="sand">
 <section class="section directory" aria-labelledby="directory-title"><div class="container">
 <div class="directory-heading"><h1 id="directory-title">Finde deinen Lieblingsplatz.</h1>
-<p>Sieben Apartments, sieben unterschiedliche Möglichkeiten, deine Zeit in Büsum zu genießen. Schau dich um und entdecke das Apartment, das zu dir passt.</p></div>
+<p>Sieben individuelle Ferienapartments im Haus Aquamarin in Büsum – alle mit Balkon oder Terrasse und nur ca. 400 m von der Familienlagune Perlebucht entfernt. Schau dich um und entdecke das Apartment, das zu dir passt.</p></div>
 <nav class="apartment-selection" aria-label="Apartment auswählen"><a href="#auswahl">Alle Apartments</a>{apartments.map(a => <a href={`#${a.id}`}>{a.name}</a>)}</nav>
 <div id="auswahl" class="apartment-grid" tabindex="-1">
           {apartments.map(a => <article class="apartment-card" id={a.id} tabindex="-1" data-apartment={a.id} data-guests={a.guests} data-type={a.type}>
-            <div class="card-photo"><Photo stem={a.image} alt={`Wohnbereich im Apartment ${a.name}`} /><span class="photo-tag">{a.floor}</span></div>
+            <div class="card-photo"><Photo stem={a.image} alt={altFor(a.id)} /><span class="photo-tag">{a.floor}</span></div>
             <div class="card-copy"><h3>{a.name}</h3><p class="card-subline"><strong>{a.lead}</strong> – {a.line}</p><ul class="feature-capsules" aria-label={`Merkmale von ${a.name}`}><li>{a.size}</li><li>bis {a.guests} Pers.</li><li>{a.outdoorLabel}</li><li>{a.sleeping}</li></ul>{a.id === "saphir" ? <a class="button" href={`${base}/apartments/saphir/`}>Apartment ansehen <Icon name="arrow" /></a> : <button class="button" data-open={`apartment-${a.id}`}>Apartment ansehen <Icon name="arrow" /></button>}</div>
           </article>)}
-</div></div></section></main>
+</div></div></section>
+<section class="final-cta" id="abschluss"><div class="container"><h2>Bereit für Büsum?</h2><p>Prüf jetzt die Verfügbarkeit. Du buchst direkt bei Iris.</p><a class="button" href={`${base}/#verfuegbarkeit`}>Verfügbarkeit prüfen <Icon name="arrow" /></a></div></section>
+</main>
 <Footer /><Dialogs />
-  {apartments.filter(a => a.id !== "saphir").map(a => <dialog id={`apartment-${a.id}`} aria-labelledby={`title-${a.id}`}><button class="dialog-close" aria-label="Schließen"><Icon name="close" /></button><Photo stem={a.image} alt={`Wohnbereich ${a.name}`} /><div class="dialog-copy"><p class="eyebrow">Dein Apartment im Haus Aquamarin</p><h2 id={`title-${a.id}`}>{a.name}</h2><p>{a.size} · bis {a.guests} Personen · {a.floor}</p><p>{a.note}</p><p><strong>{a.outdoor}</strong></p><a class="button" href={`mailto:iris_borck@mac.com?subject=Anfrage%20Apartment%20${encodeURIComponent(a.name)}`}>Iris zum Apartment fragen <Icon name="arrow" /></a><p class="small-note">Apartment-Kurzansicht. Die vollständige Detailseite folgt später.</p></div></dialog>)}
+  {apartments.filter(a => a.id !== "saphir").map(a => <dialog id={`apartment-${a.id}`} aria-labelledby={`title-${a.id}`}><button class="dialog-close" aria-label="Schließen"><Icon name="close" /></button><Photo stem={a.image} alt={altFor(a.id)} /><div class="dialog-copy"><p class="eyebrow">Dein Apartment im Haus Aquamarin</p><h2 id={`title-${a.id}`}>{a.name}</h2><p>{a.size} · bis {a.guests} Personen · {a.floor}</p><p>{a.note}</p><p><strong>{a.outdoor}</strong></p><a class="button" href={`mailto:iris_borck@mac.com?subject=Anfrage%20Apartment%20${encodeURIComponent(a.name)}`}>Iris zum Apartment fragen <Icon name="arrow" /></a><p class="small-note">Apartment-Kurzansicht. Die vollständige Detailseite folgt später.</p></div></dialog>)}
 
 <script src="../scripts/apartment-shell.ts"></script>
 </Layout>
