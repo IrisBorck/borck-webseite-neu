@@ -1,0 +1,33 @@
+---
+import { taxCategories, taxNotice, separateTax } from '../../data/visitor-tax.mjs';
+const { maxPeople = 100 } = Astro.props;
+---
+<section class="tax-calculator" aria-labelledby="tax-calc-title" data-tax-calculator data-max-people={maxPeople}>
+<header><h2 id="tax-calc-title">Kurabgabe berechnen</h2><p>Berechne hier die voraussichtliche Kurabgabe für deinen Aufenthalt.</p><p class="subtle">An- und Abreisetag werden jeweils als Kurabgabe-Tag berechnet.</p></header>
+<form autocomplete="off" novalidate>
+<fieldset><legend>Dein Aufenthalt</legend><div class="fields">
+<label for="tax-arrival">Anreise<input id="tax-arrival" type="date" required aria-describedby="tax-feedback" /></label>
+<label for="tax-departure">Abreise<input id="tax-departure" type="date" required aria-describedby="tax-feedback" /></label>
+<label for="tax-adults">Personen ab 16 Jahren<input id="tax-adults" type="number" min="0" max={maxPeople} step="1" value="2" required inputmode="numeric" aria-describedby="tax-feedback" /></label>
+<label for="tax-children">Kinder bis einschließlich 15 Jahre<input id="tax-children" type="number" min="0" max={maxPeople} step="1" value="0" required inputmode="numeric" aria-describedby="tax-feedback" /></label>
+</div></fieldset>
+<label class="check-label"><input id="tax-special" type="checkbox" aria-controls="tax-people" aria-expanded="false" /> Ermäßigung oder Befreiung für Personen ab 16 Jahren berücksichtigen</label>
+<div id="tax-people" hidden>
+<p class="subtle" id="tax-category-help">Wähle pro Person genau eine zutreffende Kategorie. Eine Begleitperson ist nur bei erfüllten Voraussetzungen ermäßigt oder befreit.</p>
+<div data-person-fields class="person-fields"></div>
+<details><summary>Welche Begleitpersonen sind berechtigt?</summary><p>Ermäßigt: eine Begleitperson einer ermäßigungsberechtigten Person mit Merkzeichen B. Befreit: jeweils eine Begleitperson einer Person mit BL oder H – auch ohne Eintrag im Ausweis.</p><p>Bei BL/H müssen die Kosten des Aufenthaltes und der Kur vollständig selbst getragen werden. Bei GdB mindestens 50 mit G/aG darf die Kurabgabe nicht vollständig durch einen anderen Träger übernommen werden. Bitte wähle eine Sonderkategorie nur, wenn die Voraussetzungen erfüllt sind.</p></details>
+</div>
+<template id="tax-person-template"><label>Person <span data-person-number></span><select aria-describedby="tax-category-help">{taxCategories.map(c => <option value={c.id}>{c.label}</option>)}</select></label></template>
+<p class="subtle privacy">Deine Angaben werden nur hier im Browser berechnet, nicht gespeichert und nicht an Smoobu übermittelt. Es werden keine Namen oder Nachweise benötigt.</p>
+<div class="actions"><button class="button" type="submit">Kurabgabe berechnen</button><button type="reset" class="reset">Eingaben zurücksetzen</button></div>
+<p id="tax-feedback" role="status" aria-live="polite" aria-atomic="true"></p>
+</form>
+<div class="tax-result" data-tax-result hidden aria-labelledby="tax-result-title" tabindex="-1"></div>
+<p class="separate"><strong>{separateTax}</strong></p>
+<p class="notice">{taxNotice}</p>
+<noscript><p>Für den Rechner benötigst du JavaScript. Die Tarife und Regeln findest du direkt oberhalb; bei Fragen hilft dir Iris persönlich.</p></noscript>
+</section>
+<script src="../../scripts/visitor-tax.ts"></script>
+<style>
+.tax-calculator{padding:36px;border:1px solid var(--line);border-radius:20px;background:white}header{margin-bottom:28px}h2{margin-bottom:16px}fieldset{border:0;padding:0;margin:0 0 22px}legend{font-family:Manrope,sans-serif;font-weight:700;margin-bottom:16px;font-size:19px}.fields,.person-fields{display:grid;grid-template-columns:1fr 1fr;gap:20px}.fields label,.person-fields :global(label){display:flex;flex-direction:column;gap:8px;font-weight:600;min-width:0}input:not([type=checkbox]),.person-fields :global(select){width:100%;min-width:0;max-width:100%;height:50px;padding:10px 12px;background:white;border:1px solid var(--line);border-radius:8px;font-size:16px;color:var(--navy);box-sizing:border-box}.check-label{display:flex;align-items:center;gap:12px;min-height:48px;cursor:pointer}.check-label input{width:22px;height:22px;flex:0 0 auto;accent-color:var(--navy)}#tax-people{background:var(--aqua);padding:22px;border-radius:12px;margin-top:16px}.person-fields{margin:20px 0}details{font-size:15px}summary{cursor:pointer;min-height:44px;padding:10px 0;font-weight:600}.subtle{font-size:15px;line-height:1.6}.privacy{margin:24px 0}.reset{min-height:48px;text-decoration:underline;text-decoration-color:var(--green);padding:10px 0}.tax-result{margin-top:28px;padding:28px;background:var(--aqua);border-radius:14px}.tax-result :global(h3){font-size:clamp(22px,3vw,28px);margin-bottom:12px}.tax-result :global(h4){font-size:18px;margin:22px 0 10px}.tax-result :global(ul){padding-left:22px}.tax-result :global(li){padding:4px 0}.tax-result :global(.total){padding-top:18px;border-top:1px solid var(--line);font-size:21px;font-weight:700}.separate{margin-top:24px}.notice{font-size:13px;line-height:1.6;margin-top:16px}#tax-feedback:not(:empty){margin-top:18px;border-left:3px solid var(--navy);padding:12px 16px;background:var(--aqua)}@media(max-width:600px){.tax-calculator{padding:22px 18px}.fields,.person-fields{grid-template-columns:1fr;gap:16px}#tax-people{padding:16px}.tax-result{padding:20px 16px}.actions{align-items:stretch;flex-direction:column}}
+</style>

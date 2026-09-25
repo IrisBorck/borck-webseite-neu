@@ -1,0 +1,20 @@
+---
+import { bookingPolicy as p, euro } from '../../data/booking-policy.mjs';
+import { separateTax } from '../../data/visitor-tax.mjs';
+---
+<section class="info" aria-labelledby="prices-title">
+  <h2 id="prices-title">Preise, Buchung &amp; Ablauf</h2>
+  <p><strong>Preise variieren je nach Reisezeitraum.</strong> Wähle dein Wunschdatum, um die Verfügbarkeit und den aktuellen Übernachtungspreis zu sehen. Wenn dein Zeitraum frei ist, kannst du direkt buchen und die gewünschten <strong>optionalen Leistungen</strong> auswählen.</p>
+  <p class="short-stay"><strong>Kurzreisezuschlag:</strong> Bei Aufenthalten <strong>unter {p.shortStayBelowNights} Nächten</strong> fällt <strong>einmalig</strong> ein Zuschlag von <strong>{euro(p.shortStayCents)}</strong> an. <strong>Ab {p.shortStayBelowNights} Nächten kein Kurzreisezuschlag.</strong></p>
+  <ol>
+    <li>Nach der Buchung erhältst du eine <strong>Bestätigungs-E-Mail</strong>. Den darin enthaltenen Link füllst du kurz aus.</li>
+    <li>Anschließend erhältst du deine <strong>Buchungsbestätigung / Rechnung</strong> zur Prüfung.</li>
+    <li><strong>Anzahlung: {euro(p.depositCents)}</strong> innerhalb von <strong>{p.depositDays} Tagen</strong> nach Buchung.</li>
+    <li><strong>Restzahlung: {p.balanceDays} Tage vor Anreise.</strong> Bei Buchungen weniger als {p.balanceDays} Tage vor der Anreise wird der <strong>Gesamtbetrag direkt fällig.</strong></li>
+  </ol>
+  <p><strong>{separateTax}</strong></p>
+  <p><strong>Anreise:</strong> ab 15:00 Uhr, auch spät am Abend möglich.<br /><strong>Abreise:</strong> bis 10:00 Uhr.</p>
+</section>
+<style>
+.info{min-width:0}.info h2{margin-bottom:26px}.info ol{padding-left:24px;margin:24px 0}.info li{padding:0 0 16px 8px}.short-stay{background:var(--aqua);border-left:3px solid var(--green);padding:20px;border-radius:0 12px 12px 0}
+</style>
