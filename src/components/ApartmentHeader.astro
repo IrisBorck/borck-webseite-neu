@@ -1,0 +1,17 @@
+---
+import Icon from "./Icon.astro";
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const { availabilityHref = `${base}/#verfuegbarkeit` } = Astro.props;
+---
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href={`${base}/`} aria-label="Haus Aquamarin – Startseite"><img src={`${base}/images/logo.png`} width="64" height="64" alt="Historisches Logo von Haus Aquamarin" /><span>Haus Aquamarin<small>AN DER FAMILIENLAGUNE · BÜSUM</small></span></a>
+      <button class="menu-toggle" type="button" aria-label="Menü öffnen" aria-expanded="false" aria-controls="navigation"><Icon name="menu" /></button>
+      <nav id="navigation" aria-label="Hauptnavigation">
+        <a href={`${base}/apartments/`}>Apartments</a><a href={`${base}/#lage`}>Lage &amp; Anfahrt</a><button class="nav-link" data-open="guide-lagune">Reiseführer</button><a href={`${base}/#iris`}>Über mich</a><a href="#kontakt">Kontakt</a>
+        <details class="languages"><summary aria-label="Sprache: Deutsch">DE <Icon name="chevron" /></summary><div><strong>Deutsch ✓</strong><span>English · folgt</span><span>Nederlands · folgt</span><span>Dansk · folgt</span></div></details>
+        <a class="button header-book" href={availabilityHref}>Verfügbarkeit</a>
+        <a class="header-contact" href="tel:+491727952082"><Icon name="phone" /><span>Anrufen</span></a><a class="header-contact" href="https://wa.me/491727952082" target="_blank" rel="noopener noreferrer"><Icon name="whatsapp" /><span>WhatsApp</span></a>
+      </nav>
+    </div>
+  </header>

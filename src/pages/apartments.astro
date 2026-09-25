@@ -1,265 +1,34 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from '../layouts/ApartmentLayout.astro';
+import Header from '../components/ApartmentHeader.astro';
+import Footer from '../components/ApartmentFooter.astro';
+import Dialogs from '../components/ApartmentDialogs.astro';
 import Icon from '../components/Icon.astro';
 import Photo from '../components/Photo.astro';
 import { apartments } from '../data/home';
-
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
-<Layout title="Unsere Apartments · Haus Aquamarin in Büsum">
-  <a class="skip-link" href="#inhalt">Zum Hauptinhalt springen</a>
-  <div class="preview-banner">Neue Website · Vorschau <span>— Buchungen sind hier noch nicht möglich.</span></div>
-  <header class="site-header">
-    <div class="container header-inner">
-      <a class="brand" href={base + '/'} aria-label="Haus Aquamarin – Startseite">
-        <img src={base + '/images/logo.png'} width="64" height="64" alt="Historisches Logo von Haus Aquamarin" />
-        <span>Haus Aquamarin<small>AN DER FAMILIENLAGUNE · BÜSUM</small></span>
-      </a>
-      <button class="menu-toggle" type="button" aria-label="Menü öffnen" aria-expanded="false" aria-controls="navigation"><Icon name="menu" /></button>
-      <nav id="navigation" aria-label="Hauptnavigation">
-        <a href={base + '/'}>Startseite</a>
-        <a href={base + '/apartments/'} aria-current="page">Apartments</a>
-        <a href={base + '/#lage'}>Lage &amp; Anfahrt</a>
-        <a href={base + '/#iris'}>Über mich</a>
-        <a href="#kontakt">Kontakt</a>
-        <details class="languages"><summary aria-label="Sprache: Deutsch">DE <Icon name="chevron" /></summary><div><strong>Deutsch ✓</strong><span>English · folgt</span><span>Nederlands · folgt</span><span>Dansk · folgt</span></div></details>
-        <a class="button header-book" href={base + '/#verfuegbarkeit'}>Verfügbarkeit</a>
-        <a class="header-contact" href="tel:+491727952082"><Icon name="phone" /><span>Anrufen</span></a>
-        <a class="header-contact" href="https://wa.me/491727952082" target="_blank" rel="noopener noreferrer"><Icon name="whatsapp" /><span>WhatsApp</span></a>
-      </nav>
-    </div>
-  </header>
-
-  <main id="inhalt">
-    <section class="directory-hero" aria-labelledby="directory-title">
-      <img class="directory-hero-image" src={base + '/images/haus-aquamarin-aussenansicht.jpeg'} width="1654" height="1115" alt="Haus Aquamarin in Büsum mit rotem Dach und Garten" fetchpriority="high" />
-      <div class="container directory-hero-inner">
-        <p class="directory-breadcrumb"><a href={base + '/'}>Startseite</a><span aria-hidden="true">/</span> Apartments</p>
-        <p class="eyebrow">HAUS AQUAMARIN · BÜSUM</p>
-        <h1 id="directory-title">Dein Platz am Meer.</h1>
-        <p class="directory-lead">Sieben individuelle Ferienapartments, ein gemeinsames Gefühl: angekommen sein. Entdecke den Rückzugsort, der zu deiner Auszeit passt.</p>
-        <a class="button" href="#auswahl">Apartments entdecken <Icon name="arrow" /></a>
-      </div>
-    </section>
-
-    <section class="directory-intro section" aria-labelledby="intro-title">
-      <div class="container directory-intro-inner">
-        <div>
-          <p class="eyebrow">SIEBEN APARTMENTS · EIN LIEBLINGSPLATZ</p>
-          <h2 id="intro-title">So unterschiedlich wie deine Urlaubstage.</h2>
-          <p>Alle Apartments liegen im Haus Aquamarin – nur ca. 400 m von der Familienlagune Perlebucht entfernt. Vom kompakten Apartment für zwei bis zum großzügigen Zuhause für fünf: Hier findest du alle sieben auf einen Blick.</p>
-        </div>
-        <div class="directory-facts" aria-label="Haus Aquamarin auf einen Blick">
-          <div><strong>7</strong><span>individuelle Apartments</span></div>
-          <div><strong>28–76 m²</strong><span>Wohnfläche, teils ca.-Angaben</span></div>
-          <div><strong>1–5</strong><span>Personen je Apartment</span></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="directory-list section sand" id="auswahl" aria-labelledby="selection-title">
-      <div class="container">
-        <div class="section-heading">
-          <p class="eyebrow">FINDE DEIN APARTMENT</p>
-          <h2 id="selection-title">Alle sieben auf einen Blick.</h2>
-          <p>Filtere nach maximaler Belegung oder Außenbereich und entdecke die Details deines Favoriten.</p>
-        </div>
-        <div class="directory-filters filters" role="group" aria-label="Apartments filtern">
-          <button type="button" data-filter="all" aria-pressed="true">Alle Apartments</button>
-          <button type="button" data-filter="two" aria-pressed="false">Kompakt · bis 2 Pers.</button>
-          <button type="button" data-filter="four" aria-pressed="false">Bis 4 Pers.</button>
-          <button type="button" data-filter="five" aria-pressed="false">Bis 5 Pers.</button>
-          <button type="button" data-filter="terrasse" aria-pressed="false">Mit Terrasse</button>
-          <button type="button" data-filter="balkon" aria-pressed="false">Mit Balkon</button>
-        </div>
-        <p class="directory-filter-note">Die Personenzahl gibt die maximale Belegung an. Eine Live-Verfügbarkeitsprüfung ist in dieser Vorschau noch nicht möglich.</p>
-        <p class="filter-status" id="filter-status" role="status" aria-live="polite">7 Apartments zur Auswahl</p>
-        <div class="directory-grid">
-          {apartments.map(a => <article class="directory-card" data-apartment={a.id} data-guests={a.guests} data-type={a.type}>
-            <div class="directory-photo">
-              <Photo stem={a.image} alt={'Einblick in Apartment ' + a.name} sizes="(max-width: 700px) 100vw, 50vw" />
-              <span class="photo-tag">{a.floor}</span>
-            </div>
-            <div class="directory-copy">
-              <h3>{a.name}</h3>
-              <p class="directory-teaser">{a.note}</p>
-              <ul class="feature-capsules" aria-label={'Merkmale von Apartment ' + a.name}>
-                <li>{a.size}</li>
-                <li>bis {a.guests} Personen</li>
-                <li>{a.outdoorLabel}</li>
-                <li>{a.sleeping}</li>
-              </ul>
-              <p class="directory-outlook"><Icon name="sun" /> {a.outdoor}</p>
-              <button class="button directory-detail" type="button" data-open={'detail-' + a.id}>Apartment entdecken <Icon name="arrow" /></button>
-            </div>
+<Layout title="Apartments · Haus Aquamarin in Büsum">
+<a class="skip-link" href="#inhalt">Zum Hauptinhalt springen</a>
+<div class="preview-banner">Neue Website · Vorschau <span>— Buchungen sind hier noch nicht möglich.</span></div>
+<Header />
+<main id="inhalt" class="sand">
+<section class="section directory" aria-labelledby="directory-title"><div class="container">
+<div class="directory-heading"><h1 id="directory-title">Finde deinen Lieblingsplatz.</h1>
+<p>Sieben Apartments, sieben unterschiedliche Möglichkeiten, deine Zeit in Büsum zu genießen. Schau dich um und entdecke das Apartment, das zu dir passt.</p></div>
+<nav class="apartment-selection" aria-label="Apartment auswählen"><a href="#auswahl">Alle Apartments</a>{apartments.map(a => <a href={`#${a.id}`}>{a.name}</a>)}</nav>
+<div id="auswahl" class="apartment-grid" tabindex="-1">
+          {apartments.map(a => <article class="apartment-card" id={a.id} tabindex="-1" data-apartment={a.id} data-guests={a.guests} data-type={a.type}>
+            <div class="card-photo"><Photo stem={a.image} alt={`Wohnbereich im Apartment ${a.name}`} /><span class="photo-tag">{a.floor}</span></div>
+            <div class="card-copy"><h3>{a.name}</h3><p class="card-subline"><strong>{a.lead}</strong> – {a.line}</p><ul class="feature-capsules" aria-label={`Merkmale von ${a.name}`}><li>{a.size}</li><li>bis {a.guests} Pers.</li><li>{a.outdoorLabel}</li><li>{a.sleeping}</li></ul>{a.id === "saphir" ? <a class="button" href={`${base}/apartments/saphir/`}>Apartment ansehen <Icon name="arrow" /></a> : <button class="button" data-open={`apartment-${a.id}`}>Apartment ansehen <Icon name="arrow" /></button>}</div>
           </article>)}
-        </div>
-      </div>
-    </section>
+</div></div></section></main>
+<Footer /><Dialogs />
+  {apartments.filter(a => a.id !== "saphir").map(a => <dialog id={`apartment-${a.id}`} aria-labelledby={`title-${a.id}`}><button class="dialog-close" aria-label="Schließen"><Icon name="close" /></button><Photo stem={a.image} alt={`Wohnbereich ${a.name}`} /><div class="dialog-copy"><p class="eyebrow">Dein Apartment im Haus Aquamarin</p><h2 id={`title-${a.id}`}>{a.name}</h2><p>{a.size} · bis {a.guests} Personen · {a.floor}</p><p>{a.note}</p><p><strong>{a.outdoor}</strong></p><a class="button" href={`mailto:iris_borck@mac.com?subject=Anfrage%20Apartment%20${encodeURIComponent(a.name)}`}>Iris zum Apartment fragen <Icon name="arrow" /></a><p class="small-note">Apartment-Kurzansicht. Die vollständige Detailseite folgt später.</p></div></dialog>)}
 
-    <section class="directory-info section" aria-labelledby="info-title">
-      <div class="container directory-info-inner">
-        <div class="directory-info-picture"><img src={base + '/images/hero-panorama.jpg'} width="2048" height="659" loading="lazy" alt="Blick auf die Familienlagune Perlebucht in Büsum" /></div>
-        <div>
-          <p class="eyebrow">GANZ NAH AN DER NORDSEE</p>
-          <h2 id="info-title">Ankommen. Auspacken. Durchatmen.</h2>
-          <p>Der Deich ist ca. 350 m entfernt, die Familienlagune Perlebucht ca. 400 m. Jedes Apartment hat einen eigenen kostenlosen Parkplatz; Hunde sind willkommen.</p>
-          <p>Du möchtest länger bleiben oder hast Fragen zur passenden Wohnung? Iris ist persönlich für dich da.</p>
-          <a class="text-link" href="mailto:iris_borck@mac.com?subject=Anfrage%20Haus%20Aquamarin">Iris persönlich fragen <Icon name="arrow" /></a>
-        </div>
-      </div>
-    </section>
-
-    <section class="final-cta" id="abschluss">
-      <div class="container">
-        <h2>Deine Auszeit wartet.</h2>
-        <p>Du hast ein Apartment ins Auge gefasst? Schau dir die unverbindliche Auswahl auf der Startseite an oder frag Iris direkt.</p>
-        <div class="directory-actions">
-          <a class="button" href={base + '/#verfuegbarkeit'}>Zur Verfügbarkeits-Vorschau <Icon name="arrow" /></a>
-          <a class="button directory-secondary" href="mailto:iris_borck@mac.com?subject=Anfrage%20Haus%20Aquamarin">Persönlich anfragen</a>
-        </div>
-        <p class="directory-cta-note">Diese Testseite bietet derzeit weder Live-Preise noch einen verbindlichen Buchungsabschluss.</p>
-      </div>
-    </section>
-  </main>
-
-  <footer id="footer">
-    <div class="container footer-main">
-      <div class="footer-brand"><img src={base + '/images/logo.png'} width="88" height="88" alt="Haus Aquamarin Logo" /><div><strong>Haus Aquamarin</strong><p>Sieben individuelle Ferienapartments in Büsum, nahe der Familienlagune Perlebucht.</p></div></div>
-      <div><h3>Navigation</h3><a href={base + '/'}>Startseite</a><a href={base + '/apartments/'}>Apartments</a><a href={base + '/#lage'}>Lage &amp; Anfahrt</a><a href={base + '/#iris'}>Über mich</a><a href="#kontakt">Kontakt</a></div>
-      <div id="kontakt"><h3>Kontakt</h3><a href="tel:+491727952082">Telefon: +49 172 7952082</a><a href="https://wa.me/491727952082" target="_blank" rel="noopener noreferrer">WhatsApp: +49 172 7952082</a><a href="mailto:iris_borck@mac.com">iris_borck@mac.com</a><p>Große Tiefe 31<br />25761 Büsum</p></div>
-      <div><h3>Rechtliches</h3><button type="button" data-open="legal-info">Impressum</button><button type="button" data-open="privacy-info">Datenschutz</button><button type="button" data-open="terms-info">AGB</button></div>
-    </div>
-    <div class="footer-bottom"><div class="container"><span>© {new Date().getFullYear()} Haus Aquamarin · Website-Vorschau</span><div><button type="button" data-open="legal-info">Impressum</button><button type="button" data-open="privacy-info">Datenschutz</button><button type="button" data-open="terms-info">AGB</button></div></div></div>
-  </footer>
-
-  {apartments.map(a => <dialog id={'detail-' + a.id} aria-labelledby={'title-' + a.id}>
-    <button class="dialog-close" type="button" aria-label="Schließen"><Icon name="close" /></button>
-    <Photo stem={a.image} alt={'Einblick in Apartment ' + a.name} />
-    <div class="dialog-copy">
-      <p class="eyebrow">DEIN APARTMENT IM HAUS AQUAMARIN</p>
-      <h2 id={'title-' + a.id}>{a.name}</h2>
-      <p><strong>{a.size} · bis {a.guests} Personen · {a.floor}</strong></p>
-      <p>{a.note}</p>
-      <p><strong>{a.outdoor}</strong></p>
-      <p class="directory-dialog-note">Dies ist eine Kurzansicht. Die vollständigen Apartment-Detailseiten werden separat ausgearbeitet.</p>
-      <a class="button" href={'mailto:iris_borck@mac.com?subject=' + encodeURIComponent('Anfrage Apartment ' + a.name)}>Apartment anfragen <Icon name="arrow" /></a>
-    </div>
-  </dialog>)}
-
-  <dialog id="legal-info" aria-labelledby="legal-title"><button class="dialog-close" type="button" aria-label="Schließen"><Icon name="close" /></button><div class="dialog-copy"><h2 id="legal-title">Impressum der Vorschau</h2><p>Iris Borck-Martin<br />Rehdamm 2<br />25746 Heide · Deutschland</p><p>Telefon: +49 172 7952082<br /><a href="mailto:iris_borck@mac.com">iris_borck@mac.com</a><br />USt-IdNr.: DE340109304</p><p>Diese eigenständige Arbeitsversion bietet keinen Buchungsabschluss an.</p></div></dialog>
-  <dialog id="privacy-info" aria-labelledby="privacy-title"><button class="dialog-close" type="button" aria-label="Schließen"><Icon name="close" /></button><div class="dialog-copy"><h2 id="privacy-title">Datenschutz in der Vorschau</h2><p>Verantwortlich: Iris Borck-Martin, Rehdamm 2, 25746 Heide, iris_borck@mac.com.</p><p>Diese Vorschau nutzt keine Analysewerkzeuge, keine Werbe-Cookies und keine eingebetteten Buchungs- oder Kartendienste. Bilder und Schriften werden mit der Seite ausgeliefert. Filterauswahlen bleiben in deinem Browser und werden nicht versendet oder dauerhaft gespeichert.</p><p>Bei Bereitstellung über GitHub Pages verarbeitet GitHub technische Verbindungsdaten wie die IP-Adresse. Beim Öffnen eines externen Links oder einer E-Mail gilt zusätzlich die Datenverarbeitung des jeweiligen Dienstes.</p><p>Die vollständigen Datenschutzhinweise werden vor einem regulären Websitebetrieb gesondert geprüft und ergänzt.</p></div></dialog>
-  <dialog id="terms-info" aria-labelledby="terms-title"><button class="dialog-close" type="button" aria-label="Schließen"><Icon name="close" /></button><div class="dialog-copy"><h2 id="terms-title">Buchungsbedingungen</h2><p>Über diese Vorschau können keine verbindlichen Buchungen abgeschlossen werden. Die endgültigen Buchungsbedingungen und die technische Preisberechnung werden vor Freischaltung des Buchungsbereichs separat abgestimmt.</p><p>Bereits festgelegt: Restzahlung 30 Tage vor Anreise, bei kurzfristiger Buchung innerhalb von 30 Tagen sofort. Die Kurabgabe wird separat abgerechnet.</p></div></dialog>
-
-  <script>
-    const navigation = document.querySelector('#navigation');
-    const menu = document.querySelector('.menu-toggle');
-    const closeMenu = () => {
-      navigation?.classList.remove('open');
-      menu?.setAttribute('aria-expanded', 'false');
-      menu?.setAttribute('aria-label', 'Menü öffnen');
-    };
-    menu?.addEventListener('click', () => {
-      const open = !navigation?.classList.contains('open');
-      navigation?.classList.toggle('open', open);
-      menu?.setAttribute('aria-expanded', String(open));
-      menu?.setAttribute('aria-label', open ? 'Menü schließen' : 'Menü öffnen');
-    });
-    navigation?.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
-    document.addEventListener('keydown', event => { if (event.key === 'Escape' && navigation?.classList.contains('open')) closeMenu(); });
-    window.matchMedia('(min-width: 1281px)').addEventListener('change', closeMenu);
-
-    const cards = [...document.querySelectorAll('.directory-card')];
-    const filterButtons = [...document.querySelectorAll('.directory-filters button')];
-    const status = document.querySelector('#filter-status');
-    filterButtons.forEach(button => button.addEventListener('click', () => {
-      const filter = button.dataset.filter;
-      let count = 0;
-      cards.forEach(card => {
-        const max = Number(card.dataset.guests);
-        const show = filter === 'two' ? max === 2
-          : filter === 'four' ? max === 4
-          : filter === 'five' ? max === 5
-          : filter === 'terrasse' || filter === 'balkon' ? card.dataset.type === filter : true;
-        card.hidden = !show;
-        if (show) count += 1;
-      });
-      filterButtons.forEach(item => item.setAttribute('aria-pressed', String(item === button)));
-      if (status) status.textContent = count + ' ' + (count === 1 ? 'Apartment' : 'Apartments') + ' zur Auswahl';
-    }));
-
-    let opener = null;
-    document.querySelectorAll('[data-open]').forEach(button => button.addEventListener('click', () => {
-      const dialog = document.getElementById(button.dataset.open);
-      if (!(dialog instanceof HTMLDialogElement)) return;
-      opener = button;
-      dialog.showModal();
-    }));
-    document.querySelectorAll('dialog').forEach(dialog => {
-      dialog.querySelector('.dialog-close')?.addEventListener('click', () => dialog.close());
-      dialog.addEventListener('click', event => {
-        if (event.target !== dialog) return;
-        const bounds = dialog.getBoundingClientRect();
-        if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) dialog.close();
-      });
-      dialog.addEventListener('close', () => opener?.focus({ preventScroll: true }));
-    });
-  </script>
+<script src="../scripts/apartment-shell.ts"></script>
 </Layout>
-
 <style>
-  .site-header nav a[aria-current="page"]{box-shadow:inset 0 -2px var(--green)}
-  .directory-hero{position:relative;isolation:isolate;min-height:495px;display:flex;align-items:center;background:var(--navy);color:white;overflow:hidden}
-  .directory-hero-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 45%;z-index:-2}
-  .directory-hero:after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(30,55,90,.97) 0%,rgba(30,55,90,.90) 36%,rgba(30,55,90,.32) 80%,rgba(30,55,90,.15))}
-  .directory-hero-inner{padding-block:54px 70px}
-  .directory-breadcrumb{display:flex;gap:12px;align-items:center;font-size:13px;margin-bottom:52px;color:rgba(255,255,255,.85)}
-  .directory-breadcrumb a:hover{text-decoration-color:white}
-  .directory-hero .eyebrow{color:white}
-  .directory-hero h1{max-width:700px;color:white;margin-bottom:22px}
-  .directory-lead{font-size:21px;line-height:1.55;max-width:570px;margin-bottom:27px}
-  .directory-hero .button:focus-visible{outline-color:white}
-  .directory-intro{padding-block:65px 58px}
-  .directory-intro-inner{display:grid;grid-template-columns:1.1fr .9fr;gap:78px;align-items:center}
-  .directory-intro h2{margin-bottom:19px}
-  .directory-intro p:not(.eyebrow){font-size:18px}
-  .directory-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-  .directory-facts>div{background:var(--aqua);border:1px solid var(--line);border-radius:17px;padding:25px 14px;min-height:125px;display:flex;flex-direction:column;gap:9px}
-  .directory-facts strong{font:800 clamp(23px,2vw,32px)/1.15 Manrope,sans-serif;letter-spacing:-.04em}
-  .directory-facts span{font-size:13px;line-height:1.4}
-  .directory-list{padding-block:74px 86px}
-  .directory-list .section-heading{margin-bottom:26px}
-  .directory-list .section-heading p:last-child{font-size:17px}
-  .directory-filter-note{font-size:13px;max-width:none;margin-top:17px}
-  .directory-list .filter-status{font-size:14px;margin:22px 0}
-  .directory-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;align-items:stretch}
-  .directory-card{background:white;border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 4px 20px rgba(30,55,90,.04);display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s}
-  .directory-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
-  .directory-photo{position:relative;aspect-ratio:1.8;overflow:hidden;background:var(--aqua)}
-  .directory-photo img{height:100%;width:100%;object-fit:cover;transition:transform .25s}
-  .directory-card:hover .directory-photo img{transform:scale(1.02)}
-  .directory-copy{padding:25px 29px 30px;display:flex;flex-direction:column;flex:1}
-  .directory-copy h3{font-size:27px;margin-bottom:11px}
-  .directory-teaser{font-size:17px;line-height:1.55;min-height:78px}
-  .directory-copy .feature-capsules{margin:20px 0 14px}
-  .directory-outlook{display:flex;align-items:flex-start;gap:9px;font-size:14px;font-weight:600;margin-bottom:23px}
-  .directory-outlook :global(.icon){color:var(--green);width:18px;height:18px;margin-top:2px}
-  .directory-detail{margin-top:auto;align-self:flex-start}
-  .directory-info{padding-block:80px}
-  .directory-info-inner{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:68px}
-  .directory-info-picture{height:370px;border-radius:20px;overflow:hidden}
-  .directory-info-picture img{height:100%;width:100%;object-fit:cover;object-position:65% center}
-  .directory-info h2{margin-bottom:22px}
-  .directory-info p:not(.eyebrow){font-size:18px}
-  .directory-info .text-link{margin-top:16px}
-  .directory-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px}
-  .directory-secondary{background:transparent;color:white;border-color:rgba(255,255,255,.8)}
-  .directory-secondary:hover{background:white;color:var(--navy)}
-  .directory-cta-note{font-size:13px;opacity:.85;margin:20px auto 0}
-  .directory-dialog-note{font-size:14px;margin-top:19px;opacity:.8}
-  @media(min-width:1101px){.directory-card:last-child{grid-column:auto}}
-  @media(max-width:1050px){.directory-intro-inner{gap:30px}.directory-facts>div{padding:20px 11px}.directory-info-inner{gap:35px}}
-  @media(max-width:700px){.directory-hero{min-height:0}.directory-hero-image{object-position:64% center}.directory-hero:after{background:linear-gradient(90deg,rgba(30,55,90,.93),rgba(30,55,90,.74))}.directory-hero-inner{padding-block:31px 46px}.directory-breadcrumb{margin-bottom:35px}.directory-hero h1{font-size:37px}.directory-lead{font-size:18px}.directory-intro{padding-block:55px}.directory-intro-inner,.directory-info-inner{grid-template-columns:1fr;gap:28px}.directory-facts{gap:8px}.directory-facts>div{min-height:104px;padding:15px 9px;border-radius:12px}.directory-facts strong{font-size:19px}.directory-facts span{font-size:11px}.directory-list{padding-block:57px 64px}.directory-grid{grid-template-columns:1fr;gap:22px}.directory-photo{aspect-ratio:1.55}.directory-copy{padding:23px}.directory-teaser{min-height:0}.directory-detail{width:100%}.directory-info{padding-block:58px}.directory-info-picture{height:230px}.directory-info p:not(.eyebrow){font-size:17px}.directory-actions{display:grid}.directory-cta-note{font-size:12px}}
-  @media(max-width:360px){.directory-facts{grid-template-columns:1fr}.directory-facts>div{min-height:0}.directory-facts strong{font-size:23px}}
-  @media(prefers-reduced-motion:reduce){.directory-card:hover,.directory-card:hover .directory-photo img{transform:none}}
+.directory{padding-top:56px}.directory-heading{max-width:800px;margin-bottom:28px}.directory-heading h1{margin-bottom:22px}.directory-heading p{font-size:20px;line-height:1.65}.apartment-selection{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:36px}.apartment-selection a{display:inline-flex;align-items:center;min-height:44px;border:1px solid var(--line);border-radius:30px;background:white;padding:9px 19px;text-decoration:none;font-size:15px}.apartment-selection a:hover,.apartment-selection a:focus-visible{background:var(--navy);color:white}.apartment-card{background:white}.apartment-card:target{outline:2px solid var(--green);outline-offset:4px}
+@media(max-width:700px){.directory{padding-top:36px}.directory-heading h1{font-size:36px}.directory-heading p{font-size:18px}.apartment-selection{gap:8px}.apartment-selection a{padding-inline:14px}}
 </style>
