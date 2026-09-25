@@ -12,7 +12,7 @@ for (const details of document.querySelectorAll<HTMLDetailsElement>('[data-booki
     }
     initialized = true;
     frame.src = frame.dataset.src!;
-    iFrameResize({ heightCalculationMethod: 'lowestElement', tolerance: 34, waitForLoad: true, checkOrigin: [new URL(frame.dataset.src!).origin], scrolling: 'auto' }, frame);
+    iFrameResize({ heightCalculationMethod: 'lowestElement', tolerance: 0, waitForLoad: true, checkOrigin: [new URL(frame.dataset.src!).origin], scrolling: 'auto' }, frame);
     // Native Scrollbarkeit bleibt als Fallback erhalten, wenn Smoobu keine Höhe meldet.
   });
 }
