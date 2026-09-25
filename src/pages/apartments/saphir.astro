@@ -53,7 +53,6 @@ const distances = [['Familienlagune Perlebucht','0,4 km'],['Restaurant','0,4 km'
 </main>
 <Footer /><Dialogs />
 <dialog class="gallery-dialog" id="photo-viewer" aria-labelledby="photo-title"><button class="dialog-close" type="button" aria-label="Fotogalerie schließen"><Icon name="close" /></button><h2 id="photo-title" class="sr-only">Fotogalerie</h2><img id="viewer-image" src={imgUrl(photos[0].file)} alt={photos[0].alt} width={photos[0].width} height={photos[0].height} /><div class="viewer-caption"><p id="viewer-description">{photos[0].alt}</p><div class="gallery-controls"><button class="gallery-prev" type="button" aria-label="Vorheriges Foto">←</button><p id="viewer-status" role="status" aria-live="polite" aria-atomic="true"><span data-photo-count>Bild 1 von {photos.length}</span><span class="sr-only" data-photo-description>{photos[0].alt}</span></p><button class="gallery-next" type="button" aria-label="Nächstes Foto">→</button></div></div></dialog>
-<script src="../../scripts/apartment-shell.ts"></script>
 <script src="../../scripts/saphir-gallery.ts"></script>
 </Layout>
 <style>

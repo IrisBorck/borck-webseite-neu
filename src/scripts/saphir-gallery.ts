@@ -1,3 +1,6 @@
+// Gemeinsame Bedienung importieren: die Galerie bleibt als externes Modul CSP-konform.
+import './apartment-shell';
+
 const thumbnails = [...document.querySelectorAll<HTMLButtonElement>('[data-photo]')];
 const mainImage = document.querySelector<HTMLImageElement>('#gallery-photo')!;
 const viewerImage = document.querySelector<HTMLImageElement>('#viewer-image')!;
