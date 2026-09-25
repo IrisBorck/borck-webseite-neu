@@ -19,5 +19,5 @@ const { apartment } = Astro.props;
 <script src="../../scripts/apartment-booking.ts"></script>
 <style>
 .booking-section{background:var(--aqua)}h2{margin-bottom:18px}.booking-costs{margin:26px 0;font-size:16px}.four-night-hint{font-size:15px;margin:18px 0}.booking-disclosure>summary{list-style:none;width:fit-content;cursor:pointer}.booking-disclosure>summary::-webkit-details-marker{display:none}.open-label{display:none}.booking-disclosure[open] .closed-label{display:none}.booking-disclosure[open] .open-label{display:inline}.booking-panel{margin-top:26px;padding:24px;background:white;border:1px solid var(--line);border-radius:16px}.booking-panel iframe{display:block;width:100%;border:0;min-height:400px;margin-block:20px}.small-note{font-size:14px;line-height:1.6}@media(max-width:600px){.booking-panel{padding:16px 0}.booking-panel p{padding-inline:14px}.booking-disclosure>summary{width:100%}}
-@media(max-width:360px){.booking-panel{margin-inline:-16px;border-inline:0;border-radius:0}}
+@media(max-width:360px){.booking-panel{margin-inline:-16px;border-inline:0;border-radius:0}.booking-panel iframe{width:calc(100% / .95);zoom:.95}}
 </style>

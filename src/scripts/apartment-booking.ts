@@ -12,11 +12,11 @@ for (const details of document.querySelectorAll<HTMLDetailsElement>('[data-booki
     }
     initialized = true;
     frame.src = frame.dataset.src!;
-    iFrameResize({ heightCalculationMethod: 'lowestElement', tolerance: 0, waitForLoad: true, checkOrigin: [new URL(frame.dataset.src!).origin], scrolling: 'auto', resizedCallback: ({ height }: { height: number }) => {
+    iFrameResize({ heightCalculationMethod: 'lowestElement', tolerance: 0, waitForLoad: true, checkOrigin: [new URL(frame.dataset.src!).origin], scrolling: 'auto', resizedCallback: ({ height }: { height: number | string }) => {
       // Bei sehr schmalen Frames können klassische 15-px-Scrollleisten sich
       // gegenseitig auslösen. Etwas Luft erhält die volle Anbieterbreite,
       // während die Inhaltshöhe weiterhin bei jeder Meldung neu gesetzt wird.
-      frame.style.height = `${height + (frame.clientWidth < 340 ? 16 : 0)}px`;
+      frame.style.height = `${Number(height) + (frame.clientWidth < 340 ? 16 : 0)}px`;
     } }, frame);
     // Native Scrollbarkeit bleibt als Fallback erhalten, wenn Smoobu keine Höhe meldet.
   });
