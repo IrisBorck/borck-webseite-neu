@@ -1,35 +1,49 @@
-# Direkte Apartmentsuche – Entwurf, nicht zur Veröffentlichung freigegeben
+# Direkte Apartmentsuche – technischer Stand vom 27. September 2026
 
-Stand: 27. September 2026. Die veröffentlichte Übersicht bleibt unverändert.
+Die Ergänzung liegt in Entwurf PR #3. Noch keine Live-Abnahme und keine Veröffentlichung. Der neue Auftrag erlaubt die Veröffentlichung ausschließlich nach erfolgreicher Browserprüfung mit echten Daten. Diese Voraussetzung ist noch nicht erfüllt.
 
-## Vorbereitet
+## Implementierter Ablauf
 
-Die bestehende horizontale Gestaltung und die sieben Apartments bleiben erhalten. Einleitung, Opal/Topas-Ausblick und der persönliche Telefonlink sind korrigiert. Die zusätzliche Smoobu-Ergebnisfläche entfällt in diesem Entwurf. Ergebnisse werden den bestehenden Karten anhand fester Apartment-IDs zugeordnet.
+Die sieben vorhandenen Karten erhalten Preise/Status direkt nach einer Suche. Keine zweite Smoobu-Ergebnisansicht und keine zweite Suchmaske. Gestaltung, Fotos, Einleitung, Opal/Topas-Ausblicke und der anklickbare persönliche Telefonhinweis bleiben erhalten.
 
-Die Preisberechnung verwendet ganze Centbeträge: 1–4 Nächte einmalig 8.500 Cent zusätzlich, ab fünf Nächten kein Zuschlag. Kurabgabe und freiwillige Leistungen werden nicht berechnet. Ist der Zuschlag nachweislich bereits im Lieferpreis enthalten, wird er vor der eigenen Berechnung herausgerechnet. Ohne bestätigte Preisbasis wird kein Preis angezeigt.
+`server/availability.mjs` fragt ausschließlich den offiziellen lesenden Smoobu-Endpunkt `POST https://login.smoobu.com/booking/checkApartmentAvailability` ab. Anfrage: Anreise, Abreise, Gästezahl, Kunden-ID und die sieben fest zugeordneten Apartment-IDs. Authentifizierung: HMAC mit Schlüssel, Secret, Zeitstempel und Nonce. Geheimnisse verbleiben im Server. Keine Buchungs-API, keine Reservierung, kein Scraping.
 
-Anreise, Abreise und Personenzahl werden als `arrival=YYYY-MM-DD`, `departure=YYYY-MM-DD` und `guests=N` in der URL geführt und an jeden Detailseitenlink angehängt. Keine dauerhafte Speicherung. Nur Saphir hat bereits eine lokale Detailseite; die übrigen sechs Links führen weiterhin zur bestehenden Website. Deren Übernahme in ein Buchungsformular ist damit noch nicht implementiert.
+`server/http.mjs` und `server/start.mjs` ergänzen einen ausführbaren Node-22-Dienst mit festem Pfad `/availability`, Eingabeprüfung, CORS für `https://irisborck.github.io`, 10 Sekunden Upstream-Timeout, maximal vier parallelen und 30 Anfragen pro Minute. Keine Aufzeichnung von Reiseangaben oder Zugangsdaten. Das globale Limit ist für eine einzelne Instanz ausgelegt; mehrere Instanzen brauchen einen gemeinsamen Limiter. CORS ist kein Schutz gegen direkte externe HTTP-Anfragen; das globale Limit schützt das Upstream-Budget. Ohne Konfiguration startet der Dienst nicht.
 
-## Noch fehlende Voraussetzung für echte Ergebnisse
+Der Browser prüft Datum, Personenzahl, Apartment-IDs, Währung und Vollständigkeit der Antwort. Geänderte Eingaben machen alte Preise ungültig; überholte Antworten werden verworfen. Fehler werden nicht als belegte Termine ausgegeben.
 
-Das Projekt ist eine statische Astro-Website auf GitHub Pages. Es gibt keinen bereitgestellten Server für authentifizierte Smoobu-Abfragen. Die offizielle API ist nicht für direkte Browserabfragen freigegeben; API-Schlüssel gehören nicht in Website-Dateien. Quelle: https://docs.smoobu.com/ (CORS, Authentication und Check apartment availability).
+## Preisregel – verbindlich geklärt
 
-`server/availability.mjs` ist ein vorbereiteter, noch nicht bereitgestellter Request/Response-Handler für einen Node-kompatiblen Server. Er fragt ausschließlich `POST https://login.smoobu.com/booking/checkApartmentAvailability` ab. Er kann keine Buchungen erstellen oder ändern. Kein Scraping und kein Zugriff auf iframe-Inhalte.
+Iris hat bestätigt: Der Smoobu-Übernachtungspreis enthält **keinen Kurzreisezuschlag**. Dies wird nicht erneut geprüft. Die frühere Konfiguration `SMOOBU_VERIFIED_PRICE_BASIS` und die Variante „Zuschlag bereits enthalten“ entfallen.
 
-Vor einer Veröffentlichung sind erforderlich:
+Der Server liefert den Übernachtungspreis als `baseCents`. Der Browser berechnet kalendertagsgenau in UTC: bei 1–4 Nächten einmalig 8.500 Cent, ab fünf Nächten null. Jede Anzeige wird aus dem unveränderten Basispreis neu berechnet; wiederholte Suchen addieren nichts auf einen vorherigen Gesamtpreis. Kurabgabe und optionale Leistungen werden nicht hinzugerechnet.
 
-1. Separat autorisierter Serverbetrieb mit HTTPS, Laufzeitadapter für den Handler, Anfragebegrenzung und ohne Protokollierung von Geheimnissen. GitHub Pages allein kann diesen Handler nicht ausführen. Bestehendes Hosting und Smoobu-Einstellungen wurden nicht geändert.
-2. Serverseitige Geheimnisse `SMOOBU_API_KEY`, `SMOOBU_API_SECRET` sowie `SMOOBU_CUSTOMER_ID`. Zugangsdaten ausschließlich im Secret-Speicher des gewählten Servers hinterlegen, niemals im Repository, Browser oder Chat.
-3. Echte Antworten für alle sieben Apartment-IDs mit den jeweiligen Smoobu-Angeboten vergleichen. Die dokumentierte Antwort enthält Preis und Währung, aber keinen ausreichend eindeutigen Preisbestandteilnachweis. Pro Apartment müssen Preiseinheit, enthaltene Pflichtkosten und Kurzreisezuschlag bestätigt werden.
-4. Erst dann `SMOOBU_VERIFIED_PRICE_BASIS` als JSON konfigurieren: je Apartment-ID die verifizierten Felder `unit` (`major` oder `minor`), `shortStay` (`included` oder `excluded`) und `accommodationOnly: true`. Letzteres bestätigt einen vollständigen Unterkunftspreis ohne Kurabgabe und optionale Leistungen. Ist diese Grundlage nicht nachweisbar, muss die Integration angepasst werden; das Flag darf nicht bloß zur Freischaltung gesetzt werden.
-5. Den HTTPS-Endpunkt `/availability` über `PUBLIC_AVAILABILITY_URL` beim Astro-Build setzen. Die CORS-Freigabe ist auf `https://irisborck.github.io` beschränkt. Keine Zugangsdaten als `PUBLIC_`-Variablen verwenden.
+Die technische Skalierung des API-Zahlenwerts ist unabhängig davon: `SMOOBU_PRICE_UNIT=major` bedeutet Euro, `minor` Cent. Da die öffentliche Dokumentation beim Preisfeld keine eindeutige Einheit nennt und noch kein echter API-Zugriff besteht, muss beim ersten Live-Abgleich die Einheit anhand eines bekannten Übernachtungspreises bestätigt werden. Ohne diese Einstellung wird kein Preis freigeschaltet. Es geht dabei ausdrücklich nicht um eine erneute Prüfung des Kurzreisezuschlags.
 
-Mindestmietdauer wird nur dann als „Verfügbar – Mindestmietdauer nicht erreicht“ bezeichnet, wenn die Antwort sowohl die Apartment-ID in `availableApartments` als auch Fehler 401 mit passender Mindestdauer enthält. Andere Einschränkungen werden nicht als Belegung ausgegeben. Abfragefehler sind ausdrücklich keine Nichtverfügbarkeit.
+## Mindestmietdauer
 
-## Prüfung und verbleibende Abnahme
+Die offizielle Dokumentation liefert Fehlercode 401 und `minimumLengthOfStay`. Steht das Apartment zugleich in `availableApartments` und übersteigt die Mindestdauer die angefragten Nächte, zeigt die Karte „Verfügbar – Mindestmietdauer nicht erreicht“ und den Anrufhinweis. Fehlt die Bestätigung freier Termine, wird nur „Für diese Reisedaten nicht direkt buchbar“ angezeigt. Andere Buchungsregeln werden nicht als Belegung ausgegeben. Ein fehlendes Apartment ohne Regelhinweis gilt bei einer gültigen vollständigen API-Antwort als nicht verfügbar.
 
-`npm run build`, `node scripts/check-apartment-quotes.mjs`, `node scripts/check-travel-search.mjs` und `git diff --check` erfolgreich. Die Preisprüfungen verwenden ausschließlich isolierte synthetische Testdaten: 1–6 Nächte, Jahreswechsel/Zeitumstellung, Zuschlag genau einmal, unbestätigte Preise, Mindestmietdauer, Personenlimit, Antwortprüfung und ausschließlich lesender Handler. Diese Daten gelangen nicht in die Website.
+Quelle, geprüft am 27.09.2026: https://docs.smoobu.com/ – Authentication, Smoobu Availability, Errors. Der dortige Beispielresponse enthält die Kombination aus verfügbarer ID und Mindestmietdauerfehler. Ob das Konto diese Kombination in realen Mindestmietdauerfällen liefert, bleibt Teil der Live-Abnahme.
 
-Keine echte API-Abfrage und keine Buchung durchgeführt. Die neue Fassung ist noch nicht im echten Browser abgenommen; die frühere Browserprüfung gilt nur für die veröffentlichte iframe-Fassung. Nach Bereitstellung des Servers müssen reale freie/belegte Zeiträume, Mindestmietdauer, apartmentgenaue Preise einschließlich Zuschlag sowie Desktop, Tablet und 320–430 px geprüft werden. Auch lange Namen/Preise, Datumseingaben, Fehlerfälle, schnelle Suchänderungen und alle sieben Detailseitenlinks gehören zur offenen Abnahme.
+## Übergabe an Detailseiten
 
-Der Entwurf darf bis dahin nicht nach `main` übernommen werden: Ohne konfigurierten Endpunkt zeigt die Suche korrekt einen Abruffehler statt erfundener Ergebnisse.
+`arrival=YYYY-MM-DD`, `departure=YYYY-MM-DD`, `guests=N` werden in der aktuellen URL und allen sieben Detailseitenlinks erhalten. Keine dauerhafte Speicherung und keine personenbezogenen Gästedaten. Nur Saphir hat bereits eine lokale Detailseite; sechs Links führen weiterhin zur bestehenden Website. Die Parameter stehen dort in der Ziel-URL, werden von deren Buchungsformularen aber noch nicht automatisch übernommen. Der spätere Sticky-/Buchungsauftrag kann die gemeinsame Übergabelogik verwenden.
+
+## Konkrete Inbetriebnahme
+
+Benötigt wird ein separater, dauerhaft erreichbarer Node-22-/Container-Dienst mit HTTPS. GitHub Pages bleibt unverändert als Website-Hosting bestehen; es kann diesen Server nicht selbst ausführen. Ein vorhandener Serverzugang bzw. ein gewählter Hostingdienst liegt in dieser Arbeitsumgebung nicht vor. Es wurden keine Konten, kostenpflichtigen Dienste, Domains oder Smoobu-Einstellungen angelegt/geändert.
+
+1. Im Secret-Speicher des Serverdienstes `SMOOBU_API_KEY`, `SMOOBU_API_SECRET`, `SMOOBU_CUSTOMER_ID` und nach Preisabgleich `SMOOBU_PRICE_UNIT` hinterlegen. Keine Geheimnisse in Chat, Git oder `PUBLIC_`-Variablen.
+2. Start: `npm run start:availability`. Standard ist `127.0.0.1:8787` hinter einem HTTPS-Reverse-Proxy. Alternativ vom Repository-Stamm `docker build -f server/Dockerfile -t aquamarin-availability .`; der Container startet mit Host `0.0.0.0`, Port 8787. Keine zusätzlichen npm-Abhängigkeiten. Secrets erst zur Laufzeit über den Hostingdienst einsetzen, nicht ins Image. Das Docker-Image wurde hier nicht gebaut.
+3. Die HTTPS-Adresse mit Endung `/availability` als GitHub-Repository-Variable `PUBLIC_AVAILABILITY_URL` hinterlegen. Beide vorbereiteten Build-Workflows reichen nur diese öffentliche Adresse an Astro weiter. Niemals Smoobu-Schlüssel als Repository-Variable oder Frontendvariable eintragen.
+4. Den PR-Stand auf einer gesonderten, vom Prüf-Browser erreichbaren Vorschau unter dem erlaubten Ursprung bereitstellen, ohne die veröffentlichte `/apartments/`-Seite zu ersetzen. Alternativ benötigt ein separater Vorschau-Ursprung eine ausdrücklich fest konfigurierte CORS-Freigabe. Keine Wildcard-Freigabe.
+5. Echte API-Ergebnisse mit Smoobu-Angeboten vergleichen: alle sieben IDs, 1–5 Nächte, Personen 1–5, freie/belegte Termine, Mindestmietdauer und fehlende Preise. API-Preis gegen die Basisübernachtung prüfen; Websitebetrag muss bei 1–4 Nächten genau 85 Euro darüber liegen. Keine Buchung absenden.
+6. Desktop, Tablet, 320/375/390/430 px sowie iPhone/Safari prüfen: Eingaben, Preis-/Statuswechsel, schnelles Ändern, lange Preise, alle sieben Links, Zurücknavigation, Überläufe. Erst danach PR #3 zusammenführen und ausschließlich auf der GitHub-Testwebsite veröffentlichen.
+
+## Tatsächlich durchgeführte Prüfungen
+
+- `npm run build`: erfolgreich, einschließlich bestehender Build-, Saphir- und Kurabgabenprüfungen.
+- `npm run test:apartments`: Preisregel 1–5/6 Nächte, Zeitumstellungen/Jahreswechsel, wiederholte Preisberechnung, alle sieben IDs mit unterschiedlichen synthetischen Preisen und Gästezahlen 1–5, Mindestmietdauer mit/ohne Verfügbarkeitsnachweis, Währung/fehlerhafte Antworten, Upstream-Ausfall, Reiseparameter, HTTP-Pfad/Methode/CORS/Anfragelimit und fehlende Zugangsdaten. Ausschließlich isolierte Testdaten, keine Ergebnisse für Gäste.
+- Lokale Astro-Vorschau läuft. Der bereitgestellte Cloud-Browser blockiert den Zugriff auf `http://127.0.0.1:4321/borck-webseite-neu/apartments/` mit `ERR_BLOCKED_BY_CLIENT`. Daher keine Browserabnahme dieser neuen Fassung; die frühere Abnahme der iframe-Seite ersetzt sie nicht.
+- Keine Live-Smoobu-Anfrage, keine Buchung, keine Veröffentlichung. Es fehlen Serverbetrieb/HTTPS und sicher hinterlegte API-Zugangsdaten. Vollständige funktionale Fertigstellung und Veröffentlichung bleiben bis zur Live-Abnahme offen.

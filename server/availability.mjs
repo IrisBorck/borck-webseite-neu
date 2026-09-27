@@ -6,7 +6,7 @@ import {stayNights} from '../src/lib/apartment-quotes.mjs';
 import {searchApartments} from '../src/data/apartment-search.mjs';
 const upstream='https://login.smoobu.com/booking/checkApartmentAvailability';
 const object = x => x && typeof x==='object' && !Array.isArray(x);
-export function normalizeAvailability(raw, travel, verifiedPriceBasis={}) {
+export function normalizeAvailability(raw, travel, priceUnit) {
   if (!object(raw) || !Array.isArray(raw.availableApartments) || !raw.availableApartments.every(Number.isSafeInteger) || !object(raw.prices) || !object(raw.errorMessages)) throw Error('Invalid provider response');
   const available=new Set(raw.availableApartments);
   return searchApartments.map(a=>{
@@ -20,16 +20,13 @@ export function normalizeAvailability(raw, travel, verifiedPriceBasis={}) {
     }
     if (!available.has(a.providerId)) return {...item,status:'unavailable'};
     const price=raw.prices[a.providerId];
-    const basis=verifiedPriceBasis[a.id];
-    // Units and included price components MUST be checked for each apartment
-    // against the real account before enabling price output. Never infer them.
-    if (!object(basis) || !['major','minor'].includes(basis.unit) || !['excluded','included'].includes(basis.shortStay) || basis.accommodationOnly!==true || !price || price.currency!=='EUR' || typeof price.price!=='number' || !Number.isFinite(price.price) || price.price<0) return {...item,status:'price_unknown'};
-    const amount=price.price*(basis.unit==='major'?100:1);
+    // Iris confirmed: provider accommodation prices EXCLUDE the short-stay fee.
+    // The API's numeric unit still needs one live comparison before activation.
+    if (!['major','minor'].includes(priceUnit) || !price || price.currency!=='EUR' || typeof price.price!=='number' || !Number.isFinite(price.price) || price.price<0) return {...item,status:'price_unknown'};
+    const amount=price.price*(priceUnit==='major'?100:1);
     const cents=Math.round(amount);
     if (!Number.isSafeInteger(cents) || Math.abs(amount-cents)>0.00001) return {...item,status:'price_unknown'};
-    const included=stayNights(travel)<5 && basis.shortStay==='included'?8500:0;
-    if(cents<included) return {...item,status:'price_unknown'};
-    return {...item,status:'available',baseCents:cents-included,currency:'EUR'};
+    return {...item,status:'available',baseCents:cents,currency:'EUR'};
   });
 }
 export function signedHeaders(body,key,secret) {
@@ -56,11 +53,12 @@ export async function handleAvailability(request,env,fetchImpl=fetch) {
   try {
     const customerId=Number(env.SMOOBU_CUSTOMER_ID);
     if(!Number.isSafeInteger(customerId)||customerId<=0) return reply({error:'not_configured'},503);
-    const basis=JSON.parse(env.SMOOBU_VERIFIED_PRICE_BASIS||'{}');
+    const priceUnit=env.SMOOBU_PRICE_UNIT;
+    if (!['major','minor'].includes(priceUnit)) return reply({error:'not_configured'},503);
     const body=JSON.stringify({arrivalDate:travel.arrival,departureDate:travel.departure,guests:travel.guests,apartments:searchApartments.map(a=>a.providerId),customerId});
     const response=await fetchImpl(upstream,{method:'POST',headers:signedHeaders(body,env.SMOOBU_API_KEY,env.SMOOBU_API_SECRET),body,redirect:'error',signal:AbortSignal.timeout(10000)});
     if(!response.ok) return reply({error:'provider_unavailable'},502);
-    const apartments=normalizeAvailability(await response.json(),travel,basis);
+    const apartments=normalizeAvailability(await response.json(),travel,priceUnit);
     return reply({travel,apartments});
   } catch { return reply({error:'provider_unavailable'},502); }
 }
