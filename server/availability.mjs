@@ -6,23 +6,27 @@ import {stayNights} from '../src/lib/apartment-quotes.mjs';
 import {searchApartments} from '../src/data/apartment-search.mjs';
 const upstream='https://login.smoobu.com/booking/checkApartmentAvailability';
 const object = x => x && typeof x==='object' && !Array.isArray(x);
+const providerMap = x => object(x) ? x : (Array.isArray(x) && x.length===0 ? {} : null);
+const eurPrice = price => price?.currency==='EUR' || price?.currency==='€' || (Array.isArray(price?.priceElements) && price.priceElements.some(element=>object(element) && element.currencyCode==='EUR'));
 export function normalizeAvailability(raw, travel, priceUnit) {
-  if (!object(raw) || !Array.isArray(raw.availableApartments) || !raw.availableApartments.every(Number.isSafeInteger) || !object(raw.prices) || !object(raw.errorMessages)) throw Error('Invalid provider response');
+  const prices=providerMap(raw?.prices);
+  const errorMessages=providerMap(raw?.errorMessages);
+  if (!object(raw) || !Array.isArray(raw.availableApartments) || !raw.availableApartments.every(Number.isSafeInteger) || !prices || !errorMessages) throw Error('Invalid provider response');
   const available=new Set(raw.availableApartments);
   return searchApartments.map(a=>{
     const item={id:a.id,status:'unknown'};
     if (travel.guests>a.guests) return {...item,status:'capacity'};
-    const error=raw.errorMessages[a.providerId];
+    const error=errorMessages[a.providerId];
     if (error) {
       // Do not turn restrictions on arrival/lead time/buffer into booked dates.
       if (error.errorCode===401 && Number.isInteger(error.minimumLengthOfStay) && error.minimumLengthOfStay>stayNights(travel) && available.has(a.providerId)) return {...item,status:'minimum_stay',minimumNights:error.minimumLengthOfStay};
       return {...item,status:'restriction'};
     }
     if (!available.has(a.providerId)) return {...item,status:'unavailable'};
-    const price=raw.prices[a.providerId];
+    const price=prices[a.providerId];
     // Iris confirmed: provider accommodation prices EXCLUDE the short-stay fee.
     // The API's numeric unit still needs one live comparison before activation.
-    if (!['major','minor'].includes(priceUnit) || !price || price.currency!=='EUR' || typeof price.price!=='number' || !Number.isFinite(price.price) || price.price<0) return {...item,status:'price_unknown'};
+    if (!['major','minor'].includes(priceUnit) || !price || !eurPrice(price) || typeof price.price!=='number' || !Number.isFinite(price.price) || price.price<0) return {...item,status:'price_unknown'};
     const amount=price.price*(priceUnit==='major'?100:1);
     const cents=Math.round(amount);
     if (!Number.isSafeInteger(cents) || Math.abs(amount-cents)>0.00001) return {...item,status:'price_unknown'};
