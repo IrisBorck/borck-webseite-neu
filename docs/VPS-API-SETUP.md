@@ -58,8 +58,12 @@ IPv4:
 
 Aktueller Serverzugang:
 
-- SSH-Benutzer derzeit noch: `root`
+- regulärer SSH-Benutzer: `irisadmin`
 - SSH-Port: `22`
+- Anmeldung per SSH-Schlüssel vom iMac erfolgreich getestet
+- `irisadmin` besitzt `sudo`-Rechte
+- Root-Login per SSH deaktiviert
+- Passwort-Anmeldung per SSH deaktiviert
 
 Wichtig:
 
@@ -222,32 +226,36 @@ GitHub-Noreply-Adresse:
 
 Damit erscheint die private E-Mail-Adresse nicht in neuen öffentlichen Commits.
 
-## Noch offene Sicherheits-Härtung des VPS
+## Sicherheits-Härtung des VPS – erledigt am 28.09.2026
 
-Der Server wird aktuell noch als `root` per Passwort administriert.
+Folgende Maßnahmen wurden umgesetzt und geprüft:
 
-Vor dem regulären öffentlichen Betrieb sollten noch umgesetzt werden:
+- separater Administrator-Benutzer `irisadmin` angelegt
+- `irisadmin` zur Gruppe `sudo` hinzugefügt
+- eigener SSH-Schlüssel auf dem iMac für den VPS erzeugt
+- öffentlicher Schlüssel in `/home/irisadmin/.ssh/authorized_keys` hinterlegt
+- Anmeldung als `irisadmin` per SSH-Schlüssel erfolgreich getestet
+- `sudo whoami` erfolgreich getestet
+- SSH-Konfiguration geprüft mit `sshd -t`
+- Root-Login per SSH deaktiviert
+- Passwort-Anmeldung per SSH deaktiviert
+- Keyboard-Interactive-Login deaktiviert
+- Public-Key-Authentifizierung aktiviert
+- SSH-Dienst neu geladen
+- erneuter Login-Test nach der Härtung erfolgreich
+- UFW aktiviert und für Systemstart eingeschaltet
 
-- separaten Administrator-Benutzer anlegen
-- SSH-Schlüssel für die Serveranmeldung einrichten
-- Schlüsselanmeldung erfolgreich testen
-- danach Root-Login per Passwort deaktivieren
-- Passwort-SSH deaktivieren, sobald die Schlüsselanmeldung sicher funktioniert
-- Firewall prüfen
-- nur benötigte Ports freigeben
-- Dienst selbst nur lokal binden
+Aktuell freigegebene Ports:
 
-Vorgesehene Ports:
+- `22` / OpenSSH
+- `80/tcp`
+- `443/tcp`
 
-- `22` – SSH
-- `80` – HTTP für Zertifikats-/Weiterleitungszwecke
-- `443` – HTTPS
-
-Der Node-Dienst soll intern nur auf:
+Der interne Node-Dienst soll weiterhin nur auf:
 
 `127.0.0.1:8787`
 
-lauschen.
+lauschen und nicht direkt über die Firewall nach außen freigegeben werden.
 
 ## Geplante öffentliche API-Adresse
 
@@ -287,22 +295,21 @@ PR #3 soll erst nach vollständiger Server-, API- und Browserprüfung zusammenge
 
 ## Nächster Fortsetzungspunkt
 
-Der aktuelle GitHub-SSH-Zugriff des VPS ist eingerichtet und der Sicherheits-Commit `d0b1885` wurde erfolgreich auf `work/apartments-direkt` gepusht.
+Der VPS-Grundschutz ist abgeschlossen: `irisadmin` funktioniert per SSH-Schlüssel, Root-/Passwort-SSH ist deaktiviert und UFW ist aktiv.
 
 Als nächstes sinnvoll:
 
-1. VPS-Zugang härten: separater Admin-Benutzer + SSH-Key
-2. Firewall prüfen und vorbereiten
-3. Reverse Proxy installieren
-4. DNS-Subdomain auf den VPS zeigen lassen
-5. HTTPS einrichten
-6. Node-Availability-Dienst als systemd-Service einrichten
-7. Smoobu-Zugangsdaten ausschließlich serverseitig hinterlegen
-8. ersten kontrollierten read-only Live-Test durchführen
-9. Preiseinheit gegen bekannten Smoobu-Preis prüfen
-10. Apartmentübersicht mit echter API verbinden
-11. Desktop- und Smartphone-Browserprüfung
-12. erst danach PR #3 final bewerten und ggf. mergen
+1. Reverse Proxy installieren
+2. DNS-Subdomain auf den VPS zeigen lassen
+3. HTTPS einrichten
+4. Node-Availability-Dienst als systemd-Service einrichten
+5. sichere Servervariablen für Smoobu vorbereiten
+6. Smoobu-Zugangsdaten ausschließlich serverseitig hinterlegen
+7. ersten kontrollierten read-only Live-Test durchführen
+8. Preiseinheit gegen bekannten Smoobu-Preis prüfen
+9. Apartmentübersicht mit echter API verbinden
+10. Desktop- und Smartphone-Browserprüfung
+11. erst danach PR #3 final bewerten und ggf. mergen
 
 ## Sicherheitsgrundsatz
 
