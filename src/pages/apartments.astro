@@ -28,7 +28,7 @@ const outdoor: Record<string,string> = {
 <h1 id="directory-title">Finde deinen Lieblingsplatz.</h1>
 <p class="intro-copy">Vergleiche die Apartments und finde deine Auszeit in Büsum – ca. 400 m von der Familienlagune entfernt.</p>
 <section class="travel-search" aria-labelledby="travel-title">
-<div class="search-heading"><h2 id="travel-title">Preis &amp; Verfügbarkeit</h2><span>Direkt bei Iris</span></div>
+<div class="search-heading"><h2 id="travel-title">Preis &amp; Verfügbarkeit</h2></div>
 <form id="directory-search" data-endpoint={endpoint}>
 <div class="field"><label for="travel-arrival">Anreise</label><input id="travel-arrival" type="date" name="arrival" required /></div>
 <div class="field"><label for="travel-departure">Abreise</label><input id="travel-departure" type="date" name="departure" required /></div>
@@ -40,7 +40,7 @@ const outdoor: Record<string,string> = {
 </section>
 </section>
 <section class="directory-list container" aria-labelledby="selection-title" id="search-results" tabindex="-1">
-<div class="selection-heading"><h2 id="selection-title">Unsere Apartments im Vergleich</h2><span>28 bis ca. 76 m² · für 1–5 Personen</span></div>
+<div class="selection-heading"><h2 id="selection-title">Apartments im Vergleich</h2><span>28 bis ca. 76 m² · für 1–5 Personen</span></div>
 
 <div class="directory-cards">
 {apartments.map((a,index) => <article class="directory-card" id={a.id} data-directory-apartment={a.id} data-guests={a.guests} aria-labelledby={`name-${a.id}`}>
