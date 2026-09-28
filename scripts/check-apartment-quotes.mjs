@@ -22,6 +22,10 @@ assert.equal(normalizeAvailability(raw,travel).find(x=>x.id==='saphir').status,'
 const item=normalizeAvailability(raw,travel,basis)[0];
 for(let repeat=0;repeat<3;repeat++) assert.equal(accommodationQuote(item.baseCents,travel).totalCents,41500,'Repeated rendering adds fee once');
 assert.equal(normalizeAvailability({...raw,prices:{133655:{price:33000,currency:'EUR'}}},travel,'minor')[0].baseCents,33000);
+const liveShape={availableApartments:[133655],prices:{133655:{price:420,currency:'€',priceElements:[{type:'basePrice',amount:420,currencyCode:'EUR'}]}},errorMessages:[]};
+assert.equal(normalizeAvailability(liveShape,travel,'major')[0].baseCents,42000,'Live Smoobu euro symbol and empty error array are accepted');
+const emptyLiveShape={availableApartments:[],prices:[],errorMessages:[]};
+assert.equal(normalizeAvailability(emptyLiveShape,travel,'major').every(x=>x.status==='unavailable'),true,'Empty Smoobu arrays are accepted as no matches');
 const uncertain=structuredClone(raw);uncertain.availableApartments=[133655];
 assert.equal(normalizeAvailability(uncertain,travel,basis).find(x=>x.id==='opal').status,'restriction','Minimum-stay error alone does not prove free dates');
 const foreign=structuredClone(raw);foreign.prices[133655].currency='USD';assert.equal(normalizeAvailability(foreign,travel,basis)[0].status,'price_unknown');
