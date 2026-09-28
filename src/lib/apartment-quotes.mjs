@@ -1,5 +1,10 @@
 import { validDate } from './travel-search.mjs';
 import { bookingPolicy } from '../data/booking-policy.mjs';
+export function minimumStayMessage(minimumNights, travel) {
+  const nights = stayNights(travel);
+  if (!Number.isSafeInteger(minimumNights) || minimumNights <= nights) throw Error('Invalid minimum stay');
+  return `Mindestaufenthalt: ${minimumNights} Nächte · gewählt: ${nights} ${nights === 1 ? 'Nacht' : 'Nächte'}`;
+}
 export function stayNights(travel) {
   if (!validDate(travel.arrival) || !validDate(travel.departure)) throw Error('Invalid travel dates');
   const nights=(Date.parse(`${travel.departure}T00:00:00Z`)-Date.parse(`${travel.arrival}T00:00:00Z`))/86400000;

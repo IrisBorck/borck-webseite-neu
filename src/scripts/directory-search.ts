@@ -1,5 +1,5 @@
 import { readTravel, todayISO, travelURL } from '../lib/travel-search.mjs';
-import { accommodationQuote } from '../lib/apartment-quotes.mjs';
+import { accommodationQuote, minimumStayMessage, stayNights } from '../lib/apartment-quotes.mjs';
 type Travel = {arrival:string;departure:string;guests:number};
 type Result = {id:string;status:string;baseCents?:number;currency?:string;minimumNights?:number};
 const form=document.querySelector<HTMLFormElement>('#directory-search')!;
@@ -50,7 +50,7 @@ function render(card:HTMLElement,item:Result,travel:Travel) {
   } else if(item.status==='unavailable') {
     cardState(card,'Gewünschter Zeitraum nicht verfügbar'); card.classList.add('is-unavailable');
   } else if(item.status==='minimum_stay') {
-    cardState(card,'Verfügbar – Mindestmietdauer nicht erreicht');
+    cardState(card,minimumStayMessage(item.minimumNights,travel));
     card.querySelector<HTMLElement>('[data-card-contact]')!.hidden=false;
   } else if(item.status==='capacity') {
     cardState(card,`Für ${travel.guests} Personen zu klein`); card.classList.add('capacity-mismatch');
@@ -66,7 +66,7 @@ function checkedResults(data:any,travel:Travel):Result[] {
   for(const item of data.apartments) {
     if(!item || !expected.delete(item.id) || !['available','unavailable','minimum_stay','capacity','restriction','price_unknown','unknown'].includes(item.status)) throw Error('Invalid result');
     if(item.status==='available' && (item.currency!=='EUR' || !Number.isSafeInteger(item.baseCents) || item.baseCents<0)) throw Error('Invalid price');
-    if(item.status==='minimum_stay' && (!Number.isInteger(item.minimumNights) || item.minimumNights<2)) throw Error('Invalid minimum stay');
+    if(item.status==='minimum_stay' && (!Number.isSafeInteger(item.minimumNights) || item.minimumNights<=stayNights(travel))) throw Error('Invalid minimum stay');
   }
   return data.apartments;
 }

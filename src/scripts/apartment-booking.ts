@@ -1,8 +1,18 @@
 // Der bestehende Smoobu-Frame nutzt iframe-resizer. Gleiche Elternbibliothek wie
 // BookingToolIframe.js, lokal ausgeliefert und auf den Anbieter-Origin begrenzt.
 import iFrameResize from 'iframe-resizer/js/iframeResizer';
+import { readTravel, smoobuApartmentURL } from '../lib/travel-search.mjs';
 for (const details of document.querySelectorAll<HTMLDetailsElement>('[data-booking]')) {
   const frame = details.querySelector<HTMLIFrameElement>('[data-booking-frame]')!;
+  const windowLink = details.querySelector<HTMLAnchorElement>('[data-booking-window]')!;
+  const updateBookingURL = () => {
+    const travel = readTravel(new URLSearchParams(location.search));
+    const url = smoobuApartmentURL(details.dataset.apartmentId, travel).href;
+    frame.dataset.src = url;
+    windowLink.href = url;
+  };
+  updateBookingURL();
+  window.addEventListener('pageshow', updateBookingURL);
   let initialized = false;
   details.addEventListener('toggle', () => {
     if (!details.open) return;
@@ -10,6 +20,7 @@ for (const details of document.querySelectorAll<HTMLDetailsElement>('[data-booki
       (frame as any).iFrameResizer?.resize();
       return;
     }
+    updateBookingURL();
     initialized = true;
     frame.src = frame.dataset.src!;
     iFrameResize({ heightCalculationMethod: 'lowestElement', tolerance: 0, waitForLoad: true, checkOrigin: [new URL(frame.dataset.src!).origin], scrolling: 'auto', resizedCallback: ({ height }: { height: number | string }) => {

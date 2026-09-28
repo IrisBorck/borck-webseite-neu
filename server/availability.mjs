@@ -19,7 +19,9 @@ export function normalizeAvailability(raw, travel, priceUnit) {
     const error=errorMessages[a.providerId];
     if (error) {
       // Do not turn restrictions on arrival/lead time/buffer into booked dates.
-      if (error.errorCode===401 && Number.isInteger(error.minimumLengthOfStay) && error.minimumLengthOfStay>stayNights(travel) && available.has(a.providerId)) return {...item,status:'minimum_stay',minimumNights:error.minimumLengthOfStay};
+      // A minimum-stay rule describes why booking is rejected, not whether
+      // the dates are free. Preserve it even without an availableApartments entry.
+      if (error.errorCode===401 && Number.isSafeInteger(error.minimumLengthOfStay) && error.minimumLengthOfStay>stayNights(travel)) return {...item,status:'minimum_stay',minimumNights:error.minimumLengthOfStay};
       return {...item,status:'restriction'};
     }
     if (!available.has(a.providerId)) return {...item,status:'unavailable'};

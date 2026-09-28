@@ -9,6 +9,8 @@ assert.match(html,/Alle 14 Fotos ansehen/);
 assert.ok(!html.includes('viewer-description'));
 assert.ok(!html.includes('Buchungen sind hier noch nicht möglich'));
 assert.match(html,/data-src="https:\/\/booking.smoobu.com\/9A40536\?apartmentId=133655"/);
+assert.match(html,/data-apartment-id="133655"/);
+assert.match(html,/<a\b[^>]*data-booking-window[^>]*href="https:\/\/booking.smoobu.com\/9A40536\?apartmentId=133655"/);
 assert.ok(!/<iframe[^>]*\ssrc="https:\/\/booking\.smoobu\.com/.test(html), 'Buchungsiframe erst bei Öffnung laden');
 for(const s of ['Wohn- &amp; Essbereich','Einbauküche','Induktionskochfeld','Backofen mit Mikrowellenfunktion','Geschirrspüler','Kühlschrank mit Gefrierfach','Kaffeemaschine','Wasserkocher','Toaster','Haartrockner','180 cm','90 cm','Etagenbett','Kopfkissen','Bettdecken','SAT-Anschluss','DAB+','Fahrradträger','Münzwaschmaschine','Münztrockner','Babybett','Hochstuhl','Zweiter Hund','Weitere Entfernungen anzeigen','Mehr zu Lage &amp; Anfahrt','Kurabgabe berechnen','Saphir direkt buchen']) assert.ok(html.includes(s),s);
 const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);

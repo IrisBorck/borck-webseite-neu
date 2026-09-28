@@ -1,6 +1,6 @@
 // Synthetic unit fixtures only. Not imported into the website or served as live data.
 import assert from 'node:assert/strict';
-import {accommodationQuote} from '../src/lib/apartment-quotes.mjs';
+import {accommodationQuote,minimumStayMessage} from '../src/lib/apartment-quotes.mjs';
 import {normalizeAvailability,handleAvailability,signedHeaders} from '../server/availability.mjs';
 import {searchApartments} from '../src/data/apartment-search.mjs';
 const travel={arrival:'2027-10-01',departure:'2027-10-04',guests:2};
@@ -27,7 +27,23 @@ assert.equal(normalizeAvailability(liveShape,travel,'major')[0].baseCents,42000,
 const emptyLiveShape={availableApartments:[],prices:[],errorMessages:[]};
 assert.equal(normalizeAvailability(emptyLiveShape,travel,'major').every(x=>x.status==='unavailable'),true,'Empty Smoobu arrays are accepted as no matches');
 const uncertain=structuredClone(raw);uncertain.availableApartments=[133655];
-assert.equal(normalizeAvailability(uncertain,travel,basis).find(x=>x.id==='opal').status,'restriction','Minimum-stay error alone does not prove free dates');
+assert.deepEqual(normalizeAvailability(uncertain,travel,basis).find(x=>x.id==='opal'),{id:'opal',status:'minimum_stay',minimumNights:5},'Preserve rule without asserting availability or returning a bookable price');
+const shortStay={arrival:'2027-10-01',departure:'2027-10-04',guests:2};
+for(const availableApartments of [[],[133655]]) {
+ const result=normalizeAvailability({availableApartments,prices:[],errorMessages:{133655:{errorCode:401,minimumLengthOfStay:4}}},shortStay,basis)[0];
+ assert.deepEqual(result,{id:'saphir',status:'minimum_stay',minimumNights:4});
+ assert.equal(minimumStayMessage(result.minimumNights,shortStay),'Mindestaufenthalt: 4 Nächte · gewählt: 3 Nächte');
+}
+assert.equal(minimumStayMessage(4,{...shortStay,departure:'2027-10-02'}),'Mindestaufenthalt: 4 Nächte · gewählt: 1 Nacht');
+for(const minimum of [undefined,null,'4',0,-1,2,3,4.5,Infinity,Number.MAX_SAFE_INTEGER+1]) {
+ const result=normalizeAvailability({availableApartments:[],prices:[],errorMessages:{133655:{errorCode:401,minimumLengthOfStay:minimum}}},shortStay,basis)[0];
+ assert.equal(result.status,'restriction','Missing, invalid or non-blocking minimum stays remain neutral');
+ assert.throws(()=>minimumStayMessage(minimum,shortStay));
+}
+for(const errorCode of [400,402,403,404,999]) {
+ const result=normalizeAvailability({availableApartments:[],prices:[],errorMessages:{133655:{errorCode,minimumLengthOfStay:4}}},shortStay,basis)[0];
+ assert.equal(result.status,'restriction','Other rules must not be interpreted as minimum stay or occupancy');
+}
 const foreign=structuredClone(raw);foreign.prices[133655].currency='USD';assert.equal(normalizeAvailability(foreign,travel,basis)[0].status,'price_unknown');
 assert.throws(()=>normalizeAvailability({title:'error'},travel,basis));
 assert.equal(normalizeAvailability(raw,{...travel,guests:5},basis)[0].status,'capacity');
