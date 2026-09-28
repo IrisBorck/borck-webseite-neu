@@ -8,12 +8,15 @@ for (const details of document.querySelectorAll<HTMLDetailsElement>('[data-booki
   const updateBookingURL = () => {
     const travel = readTravel(new URLSearchParams(location.search));
     const url = smoobuApartmentURL(details.dataset.apartmentId, travel).href;
+    const changed = frame.dataset.src !== url;
     frame.dataset.src = url;
+    if (changed && initialized) frame.src = url;
     windowLink.href = url;
   };
-  updateBookingURL();
-  window.addEventListener('pageshow', updateBookingURL);
   let initialized = false;
+  updateBookingURL();
+  document.addEventListener('saphir-travel-change', updateBookingURL);
+  window.addEventListener('pageshow', updateBookingURL);
   details.addEventListener('toggle', () => {
     if (!details.open) return;
     if (initialized) {

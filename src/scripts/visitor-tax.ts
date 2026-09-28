@@ -1,4 +1,5 @@
 import { calculateVisitorTax } from '../lib/visitor-tax.mjs';
+import { saphirTravel } from '../lib/saphir-travel.mjs';
 import { euro } from '../data/booking-policy.mjs';
 
 for (const root of document.querySelectorAll<HTMLElement>('[data-tax-calculator]')) {
@@ -11,7 +12,17 @@ for (const root of document.querySelectorAll<HTMLElement>('[data-tax-calculator]
   const feedback = root.querySelector<HTMLElement>('#tax-feedback')!;
   const result = root.querySelector<HTMLElement>('[data-tax-result]')!;
   const maxPeople = Number(root.dataset.maxPeople);
-  const clearResult = () => { result.hidden = true; result.replaceChildren(); feedback.textContent = ''; form.querySelectorAll('[aria-invalid]').forEach(el => el.removeAttribute('aria-invalid')); };
+  let journey = saphirTravel(new URLSearchParams(location.search));
+  const note = root.querySelector<HTMLElement>('[data-tax-travel-note]')!;
+  const syncJourney = (next: typeof journey) => {
+    journey = next;
+    if (next) { input('arrival').value = next.arrival; input('departure').value = next.departure; }
+    note.textContent = next
+      ? `Deine Reisegruppe: ${next.guests} ${next.guests === 1 ? 'Person' : 'Personen'}. Bitte teile diese Gesamtzahl unten nach Alter auf.`
+      : 'Bitte gib die Altersaufteilung deiner Reisegruppe ausdrücklich an.';
+  };
+  const shareDates = () => document.dispatchEvent(new CustomEvent('saphir-tax-dates', {detail: {arrival: input('arrival').value, departure: input('departure').value}}));
+  const clearResult = () => { document.dispatchEvent(new CustomEvent('saphir-tax-result', {detail: null})); result.hidden = true; result.replaceChildren(); feedback.textContent = ''; form.querySelectorAll('[aria-invalid]').forEach(el => el.removeAttribute('aria-invalid')); };
   const syncPeople = () => {
     const count = adults.valueAsNumber;
     personArea.hidden = !special.checked;
@@ -24,6 +35,10 @@ for (const root of document.querySelectorAll<HTMLElement>('[data-tax-calculator]
       fields.append(row);
     }
   };
+  syncJourney(journey);
+  document.addEventListener('saphir-travel-change', event => { syncJourney((event as CustomEvent).detail); clearResult(); });
+  input('arrival').addEventListener('change', shareDates);
+  input('departure').addEventListener('change', shareDates);
   form.addEventListener('input', clearResult);
   adults.addEventListener('input', syncPeople);
   special.addEventListener('change', syncPeople);
@@ -31,7 +46,7 @@ for (const root of document.querySelectorAll<HTMLElement>('[data-tax-calculator]
   form.addEventListener('reset', () => {
     clearResult();
     // Reset löscht auch Standard-Personenzahlen und sensible Kategorien.
-    queueMicrotask(() => { input('arrival').value = ''; input('departure').value = ''; adults.value = '0'; children.value = '0'; special.checked = false; syncPeople(); });
+    queueMicrotask(() => { input('arrival').value = ''; input('departure').value = ''; adults.value = ''; children.value = ''; special.checked = false; syncPeople(); shareDates(); });
   });
   // Kein Submit ohne JavaScript: form-action 'none' in der Saphir-CSP.
   form.addEventListener('submit', event => {
@@ -41,6 +56,10 @@ for (const root of document.querySelectorAll<HTMLElement>('[data-tax-calculator]
     if (invalid || adultCount + childCount > maxPeople) {
       feedback.textContent = `Bitte gib gültige ganze Personenzahlen ein (insgesamt höchstens ${maxPeople}).`;
       (invalid || adults).setAttribute('aria-invalid', 'true'); (invalid || adults).focus(); return;
+    }
+    if (journey && adultCount + childCount !== journey.guests) {
+      feedback.textContent = `Die Altersaufteilung muss zur Reisegruppe mit ${journey.guests} Personen passen. Ändere bei Bedarf oben die Personenzahl.`;
+      adults.setAttribute('aria-invalid', 'true'); adults.focus(); return;
     }
     syncPeople();
     const categories = special.checked ? [...fields.querySelectorAll('select')].map(el => el.value) : Array(adultCount).fill('regular');
@@ -63,6 +82,8 @@ for (const root of document.querySelectorAll<HTMLElement>('[data-tax-calculator]
     }
     result.append(element('p', `Gesamt: ${euro(calculation.cents)}`, 'total'), element('p', 'Berechnung für diesen Aufenthalt. Bereits gezahlte Kurabgaben im selben Kalenderjahr oder weitere besondere Befreiungen bitte mit Iris klären.'));
     result.hidden = false;
+    // Share only the sum and public journey data, never eligibility categories.
+    document.dispatchEvent(new CustomEvent('saphir-tax-result', {detail: {arrival: calculation.arrival, departure: calculation.departure, people: adultCount + childCount, cents: calculation.cents}}));
     feedback.textContent = `Berechnung abgeschlossen: ${euro(calculation.cents)} für ${calculation.days} Kurabgabe-Tage. Die Aufschlüsselung folgt darunter.`;
   });
   // Browserseitige Wiederherstellung sensibler Formularwerte ebenfalls verwerfen.

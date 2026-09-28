@@ -7,6 +7,7 @@ const { apartment } = Astro.props;
 <div class="booking-intro"><div><p class="eyebrow">Deine Auszeit an der Nordsee</p><h2 id="booking-title">{apartment.name} direkt buchen</h2><p>Wunschzeitraum gefunden? Hier kannst du deine Buchung direkt abschließen.</p></div></div>
 <p class="booking-costs"><strong>Kurzreisezuschlag:</strong> Bei Aufenthalten <strong>unter {bookingPolicy.shortStayBelowNights} Nächten</strong> fällt <strong>einmalig</strong> ein Zuschlag von <strong>{euro(bookingPolicy.shortStayCents)}</strong> an. Ab {bookingPolicy.shortStayBelowNights} Nächten entfällt er.<br /><strong>{separateTax}</strong></p>
 {apartment.showFourNightHint && <p class="four-night-hint">{bookingPolicy.fourNightHint}</p>}
+<slot />
 <details class="booking-disclosure" data-booking data-apartment-id={apartment.apartmentId}>
 <summary class="button" aria-controls="booking-panel"><span class="closed-label">Jetzt buchen</span><span class="open-label">Buchungsmaske schließen</span></summary>
 <div id="booking-panel" class="booking-panel">

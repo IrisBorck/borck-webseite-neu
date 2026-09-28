@@ -1,0 +1,29 @@
+---
+import Icon from '../Icon.astro';
+const { endpoint = '' } = Astro.props;
+---
+<div class="saphir-booking-bar" data-saphir-booking data-endpoint={endpoint} aria-label="Preis und Buchung für Saphir">
+  <div class="container bar-inner">
+    <div class="bar-heading"><strong>Preis &amp; Buchung</strong><span>Saphir · bis 4 Personen</span></div>
+    <button class="travel-edit" type="button" data-edit-travel aria-haspopup="dialog"><Icon name="calendar" /><span data-travel-summary>Reisezeitraum &amp; Personen wählen</span><span class="edit-word">Ändern</span></button>
+    <div class="bar-price" role="status" aria-live="polite"><strong data-stay-price>Deine Auszeit</strong><span data-stay-status>Wähle deinen Reisezeitraum.</span></div>
+    <button type="button" class="button" data-book-saphir>Preis prüfen <Icon name="arrow" /></button>
+  </div>
+</div>
+<dialog id="saphir-travel-dialog" aria-labelledby="saphir-travel-title">
+  <button type="button" class="dialog-close" data-travel-close aria-label="Reiseauswahl schließen"><Icon name="close" /></button>
+  <div class="dialog-copy"><p class="eyebrow">Apartment Saphir</p><h2 id="saphir-travel-title">Dein Reisezeitraum</h2>
+  <form id="saphir-travel-form">
+    <div class="travel-fields"><label>Anreise<input name="arrival" type="date" required /></label><label>Abreise<input name="departure" type="date" required /></label><label>Personenzahl<select name="guests">{[1,2,3,4].map(n=><option value={n} selected={n===2}>{n} {n===1?'Person':'Personen'}</option>)}</select></label></div>
+    <p class="travel-help">Die Termine gelten auch für den Kurabgaben-Rechner. Bei geänderten Reisedaten wird eine bereits geöffnete Buchungsmaske neu geladen; dortige Eingaben gehen dabei verloren.</p>
+    <button type="submit" class="button">Preis &amp; Verfügbarkeit prüfen</button>
+  </form></div>
+</dialog>
+<noscript><p class="container">Aktuelle Preise und Verfügbarkeit findest du im <a href="#buchung">Saphir-Buchungsformular</a>.</p></noscript>
+<script src="../../scripts/saphir-booking.ts"></script>
+<style>
+.saphir-booking-bar{position:sticky;top:var(--saphir-header-height,83px);z-index:40;background:rgba(255,255,255,.98);border-block:1px solid var(--line);box-shadow:0 8px 20px rgba(30,55,90,.04)}.bar-inner{display:flex;align-items:center;gap:24px;padding-block:14px}.bar-heading{flex-shrink:0}.bar-heading strong{display:block;font:700 17px Manrope,sans-serif}.bar-heading span,.bar-price span{display:block;font-size:13px;line-height:1.4}.travel-edit{display:flex;align-items:center;gap:10px;min-height:44px;padding:6px 0;text-align:left;font-size:15px;line-height:1.4;min-width:0}.travel-edit>span{overflow-wrap:anywhere}.travel-edit .icon{color:var(--green)}.edit-word{font-size:12px;text-decoration:underline}.bar-price{margin-left:auto;max-width:250px;min-width:0}.bar-price strong{font:800 18px Manrope,sans-serif;display:block;overflow-wrap:anywhere}.bar-inner>.button{flex-shrink:0;font-size:14px}.travel-fields{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px}.travel-fields label{display:flex;flex-direction:column;gap:6px;min-width:0;font-size:15px;font-weight:600}.travel-fields input,.travel-fields select{min-width:0;width:100%;max-width:100%;height:48px;padding:8px;border:1px solid var(--line);border-radius:8px;background:white;font-size:16px}.travel-help{font-size:13px;line-height:1.5;margin-block:18px}form>.button{width:100%}#saphir-travel-dialog{max-height:85dvh}
+@media(max-width:1050px){.bar-heading{display:none}.bar-inner{gap:16px}.bar-price{max-width:210px}}
+@media(max-width:700px){.saphir-booking-bar{top:var(--saphir-header-height,69px)}.bar-inner{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 12px;padding-block:8px}.travel-edit{grid-column:1/-1;min-height:32px;font-size:13px;padding:0}.travel-edit .icon{width:17px;height:17px}.edit-word{margin-left:auto}.bar-price{margin-left:0;max-width:none}.bar-price strong{font-size:17px}.bar-price span{font-size:12px}.bar-inner>.button{font-size:12px;min-height:44px;padding:8px 12px}.travel-fields{gap:14px 10px}.dialog-copy{padding:28px 20px}}
+@media(max-height:550px){.saphir-booking-bar{position:static}}
+</style>

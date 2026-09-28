@@ -1,0 +1,11 @@
+<section class="price-summary" aria-labelledby="saphir-price-title">
+<h3 id="saphir-price-title">Deine Preisübersicht</h3>
+<p data-price-empty>Wähle oben deinen Reisezeitraum, um den aktuellen Aufenthaltspreis zu prüfen.</p>
+<div data-price-breakdown hidden>
+<dl><div><dt>Übernachtungspreis</dt><dd data-base-price></dd></div><div><dt>Kurzreisezuschlag</dt><dd data-short-price></dd></div><div><dt>Optionale Leistungen</dt><dd>Auswahl im Buchungsformular</dd></div><div><dt>Kurabgabe</dt><dd data-tax-price>Noch nicht berechnet</dd></div><div class="price-sum"><dt data-sum-label>Aufenthalt ohne Kurabgabe und Extras</dt><dd data-price-sum></dd></div></dl>
+<p class="price-note">Optionale Leistungen sind hier noch nicht enthalten. Die Kurabgabe wird separat abgerechnet. Prüfe vor dem Buchungsabschluss, welche Zuschläge und Leistungen die Preisaufstellung im Buchungsformular enthält.</p>
+</div>
+</section>
+<style>
+.price-summary{border-block:1px solid var(--line);padding-block:22px;margin-bottom:26px}.price-summary h3{font-size:22px;margin-bottom:12px}.price-summary p{font-size:15px}.price-summary dl{margin:0;max-width:760px}.price-summary dl>div{display:flex;justify-content:space-between;gap:24px;padding:7px 0;font-size:16px}.price-summary dd{margin:0;text-align:right}.price-sum{border-top:1px solid var(--line);margin-top:6px;font-weight:700}.price-note{font-size:13px!important;line-height:1.5;margin-top:14px}@media(max-width:500px){.price-summary dl>div{gap:14px;font-size:15px}.price-summary dt,.price-summary dd{min-width:0;flex:1}.price-summary dd{overflow-wrap:anywhere}}
+</style>
