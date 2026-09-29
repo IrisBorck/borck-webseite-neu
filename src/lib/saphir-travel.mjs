@@ -23,3 +23,21 @@ export function saphirResult(data, travel) {
 export function compatibleTax(tax, travel) {
   return Boolean(travel && tax && tax.arrival === travel.arrival && tax.departure === travel.departure && tax.people === travel.guests && Number.isSafeInteger(tax.cents) && tax.cents >= 0);
 }
+
+// These age bands belong to the local tax calculation, not provider age bands.
+export function readSaphirJourney(params, today = todayISO()) {
+  const a = params.get('adults16'), c = params.get('children15');
+  if (!/^[0-4]$/.test(a || '') || !/^[0-4]$/.test(c || '')) return null;
+  const guests = Number(a) + Number(c);
+  if (guests < 1 || guests > 4 || (params.has('guests') && params.get('guests') !== String(guests))) return null;
+  const travel = saphirTravel(new URLSearchParams({arrival:params.get('arrival') || '',departure:params.get('departure') || '',guests:String(guests)}),today);
+  return travel ? {...travel, adults16:Number(a), children15:Number(c)} : null;
+}
+export const emptyExtras = () => ({linen:0,towels:0,cot:0,chair:0,dogs:0});
+export function selectedExtras(values, guests) {
+  const limits = {linen:guests || 0,towels:8,cot:1,chair:1,dogs:2};
+  return Object.fromEntries(Object.entries(limits).map(([key,max]) => [key,Number.isSafeInteger(values[key]) ? Math.max(0,Math.min(max,values[key])) : 0]));
+}
+export function extrasCents(e) {
+  return e.linen*1200 + e.towels*900 + e.cot*500 + e.chair*500 + (e.dogs>=1 ? 4600 : 0) + (e.dogs===2 ? 2300 : 0);
+}

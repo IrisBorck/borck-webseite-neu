@@ -10,6 +10,7 @@ import VisitorTaxInformation from '../../components/apartment/VisitorTaxInformat
 import VisitorTaxCalculator from '../../components/apartment/VisitorTaxCalculator.astro';
 import BookingSection from '../../components/apartment/BookingSection.astro';
 import SaphirBookingBar from '../../components/apartment/SaphirBookingBar.astro';
+import SaphirExtras from '../../components/apartment/SaphirExtras.astro';
 import SaphirPriceSummary from '../../components/apartment/SaphirPriceSummary.astro';
 import { apartmentBooking } from '../../data/booking-policy.mjs';
 const endpoint = import.meta.env.PUBLIC_AVAILABILITY_URL || '';
@@ -39,15 +40,14 @@ const previewIndexes = [0, 1, 7, 8, 10, 11];
 <div hidden data-gallery-data>{photos.map(p => <span data-photo-entry data-src={imgUrl(p.file)} data-alt={p.alt} data-width={p.width} data-height={p.height}></span>)}</div>
 <noscript><p>Alle Bilder in Originalgröße: {photos.map((p,i) => <a href={imgUrl(p.file)}>Bild {i+1} · {p.alt} </a>)}</p></noscript>
 </section>
-<aside class="calendar-panel" aria-labelledby="calendar-title"><p class="eyebrow">Dein Reisezeitraum</p><h2 id="calendar-title">Belegungskalender</h2>
-<p>Freie Termine auf einen Blick. Deinen Aufenthaltspreis prüfst du direkt unterhalb.</p>
+<aside class="calendar-panel" aria-labelledby="calendar-title"><h2 id="calendar-title">Belegungskalender</h2>
+<p>Rot markierte Tage sind belegt.</p>
 <iframe id="saphir-calendar" src={`${base}/calendar/saphir.html`} title="Smoobu-Belegungskalender für Saphir" sandbox="allow-scripts" referrerpolicy="no-referrer" height="100"></iframe>
 <p id="calendar-status" class="calendar-note" role="status">Der Kalender wird geladen. Falls keine Anzeige erscheint, prüfe deinen Zeitraum bitte im Buchungsformular.</p>
-<a class="text-link" href="#saphir-price-entry">Preis &amp; Buchung <Icon name="arrow" /></a>
+
 
 </aside>
 </div></div></section>
-<div id="saphir-price-entry"></div>
 <SaphirBookingBar endpoint={endpoint} />
 <section class="section sand equipment" aria-labelledby="equipment-title"><div class="container"><h2 id="equipment-title">Ausstattung</h2>
 <div class="equipment-grid">
@@ -58,7 +58,7 @@ const previewIndexes = [0, 1, 7, 8, 10, 11];
 <section><h3>Badezimmer</h3><ul><li>Kleines <strong>Duschbad</strong></li><li><strong>Haartrockner</strong> vorhanden</li></ul></section>
 <section><h3>Unterhaltung &amp; WLAN</h3><ul><li>Kostenloses <strong>WLAN / WiFi</strong></li><li><strong>Flachbild-TV mit SAT-Anschluss</strong></li><li><strong>Grundig Digitalradio (DAB+)</strong></li></ul></section>
 </div>
-<section class="optional" aria-labelledby="optional-title"><h3 id="optional-title">Optionale Leistungen</h3><div><p>Eigene Bettwäsche und Handtücher kannst du gerne mitbringen. Alternativ stehen diese Leistungen zur Verfügung:</p><dl class="optional-prices"><div><dt><strong>Babybett</strong>, einmalig</dt><dd>5,00 €</dd></div><div><dt><strong>Hochstuhl</strong>, einmalig</dt><dd>5,00 €</dd></div><div><dt><strong>Bett- und Kissenbezüge</strong>, pro Person</dt><dd>12,00 €</dd></div><div><dt><strong>Handtuchpaket</strong> (1 Handtuch + 1 Duschtuch)</dt><dd>9,00 €</dd></div><div><dt><strong>Erster Hund</strong>, pro Aufenthalt</dt><dd>46,00 €</dd></div><div><dt><strong>Zweiter Hund</strong>, pro Aufenthalt</dt><dd>23,00 €</dd></div></dl></div></section>
+<SaphirExtras />
 </div></section>
 <section class="section" aria-label="Buchungsinformationen und Kurabgabe"><div class="container information-grid"><BookingInformation /><VisitorTaxInformation /></div></section>
 <section class="section sand calculator-section"><div class="container"><VisitorTaxCalculator maxPeople={4} /></div></section>

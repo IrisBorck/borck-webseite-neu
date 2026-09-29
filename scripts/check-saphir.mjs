@@ -23,3 +23,18 @@ for(const [,url] of html.matchAll(/(?:src|href)="(\/borck-webseite-neu\/[^"#?]*)
 const local = fs.readFileSync('src/scripts/visitor-tax.ts','utf8') + fs.readFileSync('src/lib/visitor-tax.mjs','utf8');
 assert.ok(!/\b(fetch|XMLHttpRequest|localStorage|sessionStorage|sendBeacon|postMessage)\s*[.(]/.test(local),'keine Übertragung/Speicherung aus dem Rechner');
 console.log('Saphir geprüft: 14 Bilder, sechs Vorschauen, Inhaltsabgleich, Buchungszuordnung, HTML, Anker, Assets, Datensparsamkeit.');
+
+assert.match(html,/Rot markierte Tage sind belegt/);
+assert.ok(!html.includes('Dein Reisezeitraum'));
+assert.ok(!html.includes('Freie Termine auf einen Blick'));
+assert.ok(!html.includes('saphir-travel-dialog'));
+assert.equal((html.match(/name="adults16"/g)||[]).length,1);
+assert.equal((html.match(/name="children15"/g)||[]).length,1);
+assert.ok(!html.includes('id="tax-adults"'));
+assert.ok(!html.includes('id="tax-arrival"'));
+assert.equal((html.match(/data-extra=/g)||[]).length,5);
+assert.match(html,/Diese Kostenübersicht ist keine Zahlungsaufforderung/);
+const calendar=fs.readFileSync('public/calendar/saphir.html','utf8');
+assert.match(calendar,/width:18px!important;height:18px!important/);
+assert.match(calendar,/width:44px!important;height:44px!important/);
+console.log('Saphir-Einstieg geprüft: eine Altersauswahl, reduzierte Kalendertexte, kleine Pfeilbilder/große Klickfläche, fünf Extras-Auswahlen, getrennte Zahlungsdarstellung.');

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { saphirTravel, saphirResult, compatibleTax } from '../src/lib/saphir-travel.mjs';
+import { saphirTravel, saphirResult, compatibleTax, readSaphirJourney, selectedExtras, extrasCents } from '../src/lib/saphir-travel.mjs';
 import { normalizeAvailability } from '../server/availability.mjs';
 const travel = {arrival:'2026-10-05',departure:'2026-10-09',guests:2};
 const read = values => saphirTravel(new URLSearchParams(values), '2026-09-28');
@@ -25,3 +25,17 @@ assert.ok(compatibleTax({...tax,cents:0},travel),'Valid exemptions still belong 
 for(const invalid of [null,{...tax,people:1},{...tax,departure:'2026-10-10'},{...tax,cents:-1},{...tax,cents:1.5}]) assert.equal(compatibleTax(invalid,travel),false);
 assert.equal(compatibleTax(tax,null),false);
 console.log('Saphir-Reisedaten geprüft: Kapazität, API-Zuordnung, Preis/Zuschlag, Mindestaufenthalt ohne Verfügbarkeitszusage und passende Kurabgabe.');
+
+const journey = values => readSaphirJourney(new URLSearchParams(values),'2026-09-29');
+assert.equal(journey(travel),null,'Never infer age groups from a total');
+assert.deepEqual(journey({...travel,adults16:'1',children15:'1'}),{...travel,adults16:1,children15:1});
+for(const pair of [[0,1],[1,0],[0,4],[4,0],[2,2]]) {
+ const [adults16,children15]=pair;
+ assert.equal(journey({arrival:travel.arrival,departure:travel.departure,adults16,children15}).guests,adults16+children15);
+}
+for(const bad of [{...travel,adults16:2,children15:1},{...travel,adults16:'',children15:2},{...travel,adults16:1.5,children15:.5},{...travel,adults16:-1,children15:3},{...travel,guests:0,adults16:0,children15:0},{...travel,guests:5,adults16:3,children15:2}]) assert.equal(journey(bad),null);
+const extras=selectedExtras({linen:2,towels:3,cot:1,chair:1,dogs:2},2);
+assert.equal(extrasCents(extras),13000);
+assert.equal(extrasCents({...extras,dogs:1}),10700);
+assert.deepEqual(selectedExtras({linen:4,towels:99,cot:-1,chair:1.5,dogs:5},2),{linen:2,towels:8,cot:0,chair:0,dogs:2});
+console.log('Reisegruppen und Extras geprüft: Altersgrenzen, Summen/Kapazität, unbekannte Aufteilung, Mengenbegrenzung und Hundestaffel.');

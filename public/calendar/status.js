@@ -44,6 +44,7 @@ function labelControls() {
       control.setAttribute('aria-label', label);
       control.setAttribute('role', 'button');
       control.setAttribute('tabindex', '0');
+      control.querySelectorAll('img').forEach(img => { img.alt = ''; img.setAttribute('aria-hidden', 'true'); });
     });
   }
 }
