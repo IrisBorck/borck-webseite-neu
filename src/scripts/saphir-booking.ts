@@ -16,6 +16,7 @@ const status = bar.querySelector<HTMLElement>('[data-stay-status]')!;
 const primary = form.querySelector<HTMLElement>('[data-primary-status]')!;
 const groupNote = form.querySelector<HTMLElement>('[data-group-note]')!;
 const breakdown = document.querySelector<HTMLElement>('[data-price-breakdown]')!;
+const flow = document.querySelector<HTMLElement>('[data-booking-flow]')!;
 const empty = document.querySelector<HTMLElement>('[data-price-empty]')!;
 const extraFields = [...document.querySelectorAll<HTMLSelectElement>('[data-extra]')];
 const extraNote = document.querySelector<HTMLElement>('[data-extras-note]')!;
@@ -33,7 +34,8 @@ function showState(title:string,description:string) {
 }
 function renderPrice() {
   breakdown.hidden = !quote; empty.hidden = Boolean(quote);
-  if (!quote) return;
+  flow.hidden = !quote;
+  if (!quote) { document.querySelector<HTMLDetailsElement>('[data-booking]')!.open = false; return; }
   const write = (selector:string,value:string) => { breakdown.querySelector<HTMLElement>(selector)!.textContent=value; };
   const validTax = compatibleTax(tax,travel) && tax.adults16===travel?.adults16 && tax.children15===travel?.children15;
   write('[data-base-price]',euro(quote.baseCents)); write('[data-short-price]',euro(quote.shortStayCents));
@@ -42,7 +44,10 @@ function renderPrice() {
   write('[data-extras-description]',Object.entries(extras).filter(([,n])=>n>0).map(([key,n])=>`${n} × ${names[key]}`).join(' · ') || 'Keine ausgewählt');
   write('[data-tax-price]',validTax?euro(tax.cents):'Noch nicht berechenbar');
   write('[data-sum-label]',validTax?'Voraussichtliche Aufenthaltsgesamtkosten':'Zwischensumme ohne Kurabgabe');
-  write('[data-price-sum]',euro(quote.totalCents+extrasCents(extras)+(validTax?tax.cents:0)));
+  const total = euro(quote.totalCents+extrasCents(extras)+(validTax?tax.cents:0));
+  write('[data-price-sum]',total);
+  price.textContent = total;
+  status.textContent = validTax ? 'Voraussichtlicher Gesamtpreis' : 'Zwischensumme ohne Kurabgabe';
 }
 function updateExtras() {
   const previous = extras.linen;
@@ -117,7 +122,7 @@ async function checkPrice() {
   } catch {
     if(run!==generation)return;
     showState('Preis derzeit nicht abrufbar','Iris hilft: 0172 7952082');
-    empty.textContent='Bitte versuche es erneut oder prüfe im Smoobu-Buchungsformular.';action.textContent='Erneut prüfen';
+    empty.textContent='Bitte versuche es erneut oder frag Iris.';action.textContent='Erneut prüfen';
   } finally {clearTimeout(timeout);if(run===generation){action.disabled=false;submit.disabled=false;request=null;}}
 }
 function editTravel(){document.getElementById('saphir-price-entry')!.scrollIntoView({block:'start'});arrival.focus({preventScroll:true});}

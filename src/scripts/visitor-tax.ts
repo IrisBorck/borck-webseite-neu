@@ -11,9 +11,12 @@ for (const root of document.querySelectorAll<HTMLElement>('[data-tax-calculator]
   const feedback = root.querySelector<HTMLElement>('#tax-feedback')!;
   const result = root.querySelector<HTMLElement>('[data-tax-result]')!;
   const note = root.querySelector<HTMLElement>('[data-tax-travel-note]')!;
+  const amount = root.querySelector<HTMLElement>('[data-tax-amount]')!;
+  const details = root.querySelector<HTMLDetailsElement>('[data-tax-details]')!;
   let journey = readSaphirJourney(new URLSearchParams(location.search));
   function clearResult() {
     result.hidden = true; result.replaceChildren(); feedback.textContent = '';
+    amount.textContent = 'Noch nicht berechenbar'; details.hidden = true;
     document.dispatchEvent(new CustomEvent('saphir-tax-result', {detail:null}));
   }
   function syncPeople() {
@@ -31,7 +34,7 @@ for (const root of document.querySelectorAll<HTMLElement>('[data-tax-calculator]
   function calculate() {
     clearResult(); syncPeople();
     if (!journey) { note.textContent = 'Bitte vervollständige oben Reisedaten und Reisegruppe. Es wird noch keine Kurabgabe eingerechnet.'; return; }
-    note.textContent = `${journey.arrival.split('-').reverse().join('.')} – ${journey.departure.split('-').reverse().join('.')} · ${journey.adults16} ab 16 Jahren · ${journey.children15} bis 15 Jahre`;
+    note.textContent = `${journey.adults16} Erwachsene ab 16 Jahren · ${journey.children15} Kinder bis 15 Jahre`;
     const categories = special.checked ? [...fields.querySelectorAll('select')].map(el=>el.value) : Array(journey.adults16).fill('regular');
     const calculation = calculateVisitorTax({arrival:journey.arrival,departure:journey.departure,categories,children:journey.children15});
     if (calculation.error || calculation.unavailable) { feedback.textContent = calculation.error || calculation.unavailable; return; }
@@ -47,10 +50,10 @@ for (const root of document.querySelectorAll<HTMLElement>('[data-tax-calculator]
       if (list.children.length) result.append(list);
     }
     result.append(element('p', `Gesamt: ${euro(calculation.cents)}`, 'total'), element('p', 'Berechnung für diesen Aufenthalt. Bereits gezahlte Kurabgaben im selben Kalenderjahr oder weitere besondere Befreiungen bitte mit Iris klären.'));
-    result.hidden = false;
+    result.hidden = false; details.hidden = false; amount.textContent = euro(calculation.cents);
     // No eligibility or medical categories leave the calculator.
     document.dispatchEvent(new CustomEvent('saphir-tax-result', {detail:{arrival:journey.arrival,departure:journey.departure,people:journey.guests,adults16:journey.adults16,children15:journey.children15,cents:calculation.cents}}));
-    feedback.textContent = `Berechnet: ${euro(calculation.cents)} für ${calculation.days} Kurabgabe-Tage.`;
+
   }
   document.addEventListener('saphir-travel-change',event=>{
     const next = (event as CustomEvent).detail;
