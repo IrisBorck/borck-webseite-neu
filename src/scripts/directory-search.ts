@@ -106,6 +106,12 @@ form.addEventListener('input',invalidate);
 form.addEventListener('change',invalidate);
 form.addEventListener('submit',event=>{event.preventDefault();void search();});
 document.querySelector('#clear-search')!.addEventListener('click',()=>{form.reset();invalidate();arrival.focus();});
-const restored=readTravel(new URLSearchParams(location.search));
-if(restored) {arrival.value=restored.arrival;departure.value=restored.departure;guests.value=String(restored.guests);invalidate();}
-window.addEventListener('pageshow',event=>{if(event.persisted) invalidate();else updateLinks(currentTravel());});
+function restoreSearch() {
+  const restored=readTravel(new URLSearchParams(location.search));
+  arrival.value=restored?.arrival || ''; departure.value=restored?.departure || ''; guests.value=String(restored?.guests || 2);
+  invalidate();
+  if(restored) void search();
+}
+restoreSearch();
+window.addEventListener('pageshow',event=>{if(event.persisted) restoreSearch();else updateLinks(currentTravel());});
+window.addEventListener('pagehide',()=>{generation++;controller?.abort();controller=null;});
