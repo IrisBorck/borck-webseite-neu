@@ -1,11 +1,12 @@
+import { partyKeys, readParty, readSearchTravel, searchTravelURL, partySummary } from '../lib/search-party.mjs';
 import { readTravel, todayISO, travelURL } from '../lib/travel-search.mjs';
 import { accommodationQuote, minimumStayMessage, stayNights } from '../lib/apartment-quotes.mjs';
-type Travel = {arrival:string;departure:string;guests:number};
+type Travel = {arrival:string;departure:string;guests:number;adults16:number;children3to15:number;infants2:number;totalPeople:number};
 type Result = {id:string;status:string;baseCents?:number;currency?:string;minimumNights?:number};
 const form=document.querySelector<HTMLFormElement>('#directory-search')!;
 const arrival=form.elements.namedItem('arrival') as HTMLInputElement;
 const departure=form.elements.namedItem('departure') as HTMLInputElement;
-const guests=form.elements.namedItem('guests') as HTMLSelectElement;
+const partyField=(key:string)=>form.elements.namedItem(key) as HTMLInputElement;
 const button=form.querySelector<HTMLButtonElement>('[type=submit]')!;
 const status=document.querySelector<HTMLElement>('#travel-status')!;
 const results=document.querySelector<HTMLElement>('#search-results')!;
@@ -14,7 +15,7 @@ const links=[...document.querySelectorAll<HTMLAnchorElement>('[data-travel-link]
 const euro=new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'});
 let controller:AbortController|null=null;
 let generation=0;
-const currentTravel=()=>readTravel(new URLSearchParams(new FormData(form) as any)) as Travel|null;
+const currentTravel=()=>readSearchTravel(new URLSearchParams(new FormData(form) as any)) as Travel|null;
 function cardState(card:HTMLElement,message:string,label='Apartment ansehen') {
   card.querySelector<HTMLElement>('[data-card-status]')!.textContent=message;
   card.querySelector<HTMLElement>('[data-card-status]')!.hidden=false;
@@ -23,15 +24,18 @@ function cardState(card:HTMLElement,message:string,label='Apartment ansehen') {
   card.querySelector<HTMLAnchorElement>('[data-travel-link]')!.setAttribute('aria-label',`${card.querySelector('h3')!.textContent}: ${label}`);
   card.classList.remove('capacity-mismatch','is-unavailable');
 }
-function updateLinks(travel:Travel|null) {links.forEach(link=>link.href=travelURL(link.href,travel,location.origin).href);}
+function updateLinks(travel:Travel|null) {links.forEach(link=>link.href=searchTravelURL(link.href,travel,location.origin).href);}
 function invalidate() {
   generation++; controller?.abort(); controller=null;
   button.disabled=false; results.removeAttribute('aria-busy');
   arrival.min=todayISO(); departure.min=arrival.value||arrival.min;
   departure.setCustomValidity(arrival.value&&departure.value&&departure.value<=arrival.value?'Die Abreise muss nach der Anreise liegen.':'');
+  const party=readParty(new URLSearchParams(new FormData(form) as any));
+  partyField('children3to15').setCustomValidity(party ? '' : 'Bitte gib ganze, nicht negative Zahlen und insgesamt eine bis fünf Personen ab 3 Jahren an.');
+  form.querySelector<HTMLElement>('[data-party-note]')!.textContent=party ? partySummary(party) : 'Bitte vervollständige deine Reisegruppe. Kleinkinder bis 2 Jahre zählen nicht zur regulären Maximalbelegung.';
   const travel=currentTravel(); updateLinks(travel);
-  history.replaceState(null,'',travelURL(location.href,travel,location.origin));
-  status.textContent=travel?'Reisedaten ausgewählt. Bitte Preise und Verfügbarkeit prüfen.':'Wähle deinen Reisezeitraum und die Personenzahl.';
+  history.replaceState(null,'',searchTravelURL(location.href,travel,location.origin));
+  status.textContent=travel?'Reisedaten ausgewählt. Bitte Preise und Verfügbarkeit prüfen.':'Wähle deinen Reisezeitraum und deine Reisegruppe.';
   cards.forEach(card=>cardState(card,'Preis & Verfügbarkeit nach Reisedatum','Ansehen & buchen'));
 }
 function render(card:HTMLElement,item:Result,travel:Travel) {
@@ -53,7 +57,7 @@ function render(card:HTMLElement,item:Result,travel:Travel) {
     cardState(card,minimumStayMessage(item.minimumNights,travel));
     card.querySelector<HTMLElement>('[data-card-contact]')!.hidden=false;
   } else if(item.status==='capacity') {
-    cardState(card,`Für ${travel.guests} Personen zu klein`); card.classList.add('capacity-mismatch');
+    cardState(card,`Für ${travel.guests} Personen ab 3 Jahren zu klein`); card.classList.add('capacity-mismatch');
   } else if(item.status==='restriction') {
     cardState(card,'Für diese Reisedaten nicht direkt buchbar');
   } else if(item.status==='price_unknown') {
@@ -76,7 +80,7 @@ async function search() {
   const travel=currentTravel(); if(!travel) return;
   controller?.abort(); const request=new AbortController(); controller=request;
   const run=++generation;
-  updateLinks(travel); history.replaceState(null,'',travelURL(location.href,travel,location.origin));
+  updateLinks(travel); history.replaceState(null,'',searchTravelURL(location.href,travel,location.origin));
   cards.forEach(card=>cardState(card,'Wird geprüft …'));
   status.textContent='Preise und Verfügbarkeit werden geprüft …';
   results.setAttribute('aria-busy','true'); button.disabled=true;
@@ -107,9 +111,12 @@ form.addEventListener('change',invalidate);
 form.addEventListener('submit',event=>{event.preventDefault();void search();});
 document.querySelector('#clear-search')!.addEventListener('click',()=>{form.reset();invalidate();arrival.focus();});
 function restoreSearch() {
-  const restored=readTravel(new URLSearchParams(location.search));
-  arrival.value=restored?.arrival || ''; departure.value=restored?.departure || ''; guests.value=String(restored?.guests || 2);
+  const params=new URLSearchParams(location.search), restored=readSearchTravel(params);
+  const legacy=!partyKeys.some(key=>params.has(key)) ? readTravel(params) : null;
+  arrival.value=restored?.arrival || legacy?.arrival || ''; departure.value=restored?.departure || legacy?.departure || '';
+  for(const key of partyKeys) partyField(key).value=restored ? String(restored[key]) : legacy ? '' : key==='adults16' ? '2' : '0';
   invalidate();
+  if(legacy) form.querySelector<HTMLElement>('[data-party-note]')!.textContent=`Übernommen: ${legacy.guests} Personen. Bitte ergänze die drei Altersgruppen; es wird keine Aufteilung angenommen.`;
   if(restored) void search();
 }
 restoreSearch();

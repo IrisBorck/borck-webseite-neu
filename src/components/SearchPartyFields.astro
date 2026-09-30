@@ -1,0 +1,13 @@
+---
+const { prefix } = Astro.props;
+---
+<div class="party-fields">
+  <div class="field"><label for={`${prefix}-adults16`}>Erwachsene ab 16 Jahren</label><input id={`${prefix}-adults16`} name="adults16" type="number" min="0" max="5" step="1" value="2" required inputmode="numeric" /></div>
+  <div class="field"><label for={`${prefix}-children3to15`}>Kinder von 3 bis 15 Jahren</label><input id={`${prefix}-children3to15`} name="children3to15" type="number" min="0" max="5" step="1" value="0" required inputmode="numeric" /></div>
+  <div class="field"><label for={`${prefix}-infants2`}>Kleinkinder bis einschließlich 2 Jahre</label><input id={`${prefix}-infants2`} name="infants2" type="number" min="0" step="1" value="0" required inputmode="numeric" /></div>
+</div>
+<p class="party-note" data-party-note role="status">Kleinkinder bis 2 Jahre zählen nicht zur regulären Maximalbelegung.</p>
+<style>
+.party-fields{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:end}.party-fields label{line-height:1.4}.party-fields input{max-width:100%;min-width:0;font-size:16px}.party-note{grid-column:1/-1;font-size:14px;line-height:1.5;max-width:none}
+@media(max-width:650px){.party-fields{grid-template-columns:minmax(0,1fr);gap:14px}}
+</style>

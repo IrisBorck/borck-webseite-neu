@@ -10,7 +10,7 @@
     "dev": "astro dev --host 0.0.0.0",
     "build": "astro build && node scripts/check-build.mjs && node scripts/check-home-search.mjs && node scripts/check-saphir.mjs && node scripts/check-visitor-tax.mjs && node scripts/check-saphir-interactions.mjs",
     "preview": "astro preview --host 0.0.0.0",
-    "test:apartments": "node scripts/check-apartment-quotes.mjs && node scripts/check-availability-server.mjs && node scripts/check-travel-search.mjs && node scripts/check-saphir-travel.mjs",
+    "test:apartments": "node scripts/check-apartment-quotes.mjs && node scripts/check-availability-server.mjs && node scripts/check-travel-search.mjs && node scripts/check-saphir-travel.mjs && node scripts/check-search-party.mjs",
     "start:availability": "node server/start.mjs"
   },
   "dependencies": {

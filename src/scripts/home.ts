@@ -1,4 +1,5 @@
-import { readTravel, todayISO, validDate } from '../lib/travel-search.mjs';
+import { readParty, readSearchTravel, partySummary } from '../lib/search-party.mjs';
+import { todayISO, validDate } from '../lib/travel-search.mjs';
 
 const nav = document.querySelector<HTMLElement>('#navigation')!;
 const menu = document.querySelector<HTMLButtonElement>('.menu-toggle')!;
@@ -33,15 +34,17 @@ const form = document.querySelector<HTMLFormElement>('#availability-form')!;
 const arrival = document.querySelector<HTMLInputElement>('#arrival')!;
 const departure = document.querySelector<HTMLInputElement>('#departure')!;
 function syncDates() {
+  const party = readParty(new URLSearchParams(new FormData(form) as any));
+  const children = form.elements.namedItem('children3to15') as HTMLInputElement;
+  children.setCustomValidity(party ? '' : 'Bitte gib ganze, nicht negative Zahlen und insgesamt eine bis fünf Personen ab 3 Jahren an.');
+  form.querySelector<HTMLElement>('[data-party-note]')!.textContent = party ? partySummary(party) : 'Bitte vervollständige deine Reisegruppe. Kleinkinder bis 2 Jahre zählen nicht zur regulären Maximalbelegung.';
   arrival.min = todayISO();
   const minimum = validDate(arrival.value) ? arrival.value : arrival.min;
   departure.min = new Date(Date.parse(`${minimum}T12:00:00Z`) + 86400000).toISOString().slice(0,10);
   departure.setCustomValidity(arrival.value && departure.value && departure.value <= arrival.value ? 'Bitte wähle eine Abreise nach der Anreise.' : '');
 }
-arrival.addEventListener('input', syncDates);
-arrival.addEventListener('change', syncDates);
-departure.addEventListener('input', syncDates);
-departure.addEventListener('change', syncDates);
+form.addEventListener('input', syncDates);
+form.addEventListener('change', syncDates);
 syncDates();
 // Reset native restored accordion state on initial load and back/forward navigation.
 function closeFaqs() { document.querySelectorAll<HTMLDetailsElement>('.faq-list details').forEach(d => d.open = false); }
@@ -49,7 +52,7 @@ closeFaqs();
 window.addEventListener('pageshow', () => { closeFaqs(); syncDates(); });
 form.addEventListener('submit', e => {
   syncDates();
-  if (!form.reportValidity() || !readTravel(new URLSearchParams(new FormData(form) as any))) e.preventDefault();
+  if (!form.reportValidity() || !readSearchTravel(new URLSearchParams(new FormData(form) as any))) e.preventDefault();
   // Valid submissions use the native GET form action, preserving browser Back.
 });
 
