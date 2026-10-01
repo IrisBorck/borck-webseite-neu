@@ -172,7 +172,7 @@ reply(family.requests[0],{status:'available',baseCents:42000,currency:'EUR'});aw
 assert.equal(f('[data-booking-flow]').hidden,false);
 assert.match(f('[data-price-sum]').textContent,/545,00/);
 assert.equal(f('[data-book-saphir]').textContent,'Zur Buchung');
-assert.match(f('[data-travel-summary]').textContent,/2 Erw. · 2 Kinder · 1 Kleinkinder/);
+assert.match(f('[data-travel-summary]').textContent,/2 Erw. · 2 Kinder · 1 Kleinkind/);
 assert.equal(f('[data-booking-frame]').hasAttribute('src'),false,'Background price check never opens provider booking');
 f('#saphir-travel-form').dispatchEvent(new family.w.Event('submit',{bubbles:true,cancelable:true}));assert.equal(family.requests.length,1,'Enter on confirmed state cannot repeat the check');
 f('[data-edit-travel]').click();assert.equal(f('[data-journey-editor]').open,true);

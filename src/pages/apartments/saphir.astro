@@ -23,9 +23,9 @@ const mainDistances = [['Deich','350 m'],['Familienlagune Perlebucht','400 m'],[
 const otherDistances = distances.filter(([name]) => !['Familienlagune Perlebucht','Hundestrand','Supermarkt','Fußgängerzone Alleestraße','Bahnhof'].includes(name));
 const previewIndexes = [0, 1, 7, 8, 10, 11];
 ---
-<Layout bookingEnabled searchEndpoint={endpoint} title="Saphir · Terrasse & Gartenblick · Haus Aquamarin Büsum" description="Saphir im Haus Aquamarin: 60 m² im Erdgeschoss, bis zu vier Personen, zwei Schlafzimmer und Terrasse mit Gartenblick. Alle Fotos, Ausstattung, Belegungskalender, Kurabgaben-Rechner und direkte Buchung über Smoobu.">
+<Layout bookingEnabled searchEndpoint={endpoint} title="Saphir · Terrasse & Gartenblick · Haus Aquamarin Büsum" description="Saphir im Haus Aquamarin: 60 m² im Erdgeschoss, bis zu vier Personen, zwei Schlafzimmer und Terrasse mit Gartenblick. Alle Fotos, Ausstattung, Belegungskalender, Kurabgaben-Rechner und direkte Buchung.">
 <a class="skip-link" href="#inhalt">Zum Hauptinhalt springen</a>
-<div class="preview-banner">Neue Website · Vorschau <span>— Saphir direkt über Smoobu buchen.</span></div>
+<div class="preview-banner">Neue Website · Vorschau <span>— Saphir direkt buchen.</span></div>
 <Header availabilityHref="#saphir-price-entry" />
 <main id="inhalt" class="saphir-detail">
 <section class="detail-top"><div class="container">
@@ -42,7 +42,7 @@ const previewIndexes = [0, 1, 7, 8, 10, 11];
 </section>
 <aside class="calendar-panel" aria-labelledby="calendar-title"><h2 id="calendar-title">Belegungskalender</h2>
 <p>Rot markierte Tage sind belegt.</p>
-<iframe id="saphir-calendar" src={`${base}/calendar/saphir.html`} title="Smoobu-Belegungskalender für Saphir" sandbox="allow-scripts" referrerpolicy="no-referrer" height="100"></iframe>
+<iframe id="saphir-calendar" src={`${base}/calendar/saphir.html`} title="Belegungskalender für Saphir" sandbox="allow-scripts" referrerpolicy="no-referrer" height="100"></iframe>
 <p id="calendar-status" class="calendar-note" role="status">Der Kalender wird geladen. Falls keine Anzeige erscheint, prüfe deinen Zeitraum bitte im Buchungsformular.</p>
 
 

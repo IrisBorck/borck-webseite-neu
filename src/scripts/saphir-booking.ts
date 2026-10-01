@@ -74,7 +74,7 @@ function acceptJourney(next:Journey|null) {
   action.disabled=false;action.textContent=automatic?'Reisedaten ändern':'Preis prüfen'; submit.disabled=false;submit.hidden=automatic;
   accepted=new Map(['arrival','departure',...partyKeys].map(k=>[k,field(k).value]));
   groupNote.textContent=next?`Deine Reisegruppe: ${next.totalPeople} Personen insgesamt · ${next.guests} reguläre Schlafplätze.`:'Bitte vervollständige die drei Altersgruppen. Kleinkinder bis 2 Jahre zählen nicht zur regulären Belegung.';
-  summary.textContent=next?`${date(next.arrival)} – ${date(next.departure)} · ${next.adults16} Erw. · ${next.children3to15} Kinder · ${next.infants2} Kleinkinder`:'Reisedaten vervollständigen';
+  summary.textContent=next?`${date(next.arrival)} – ${date(next.departure)} · ${next.adults16} Erw. · ${next.children3to15} ${next.children3to15===1?'Kind':'Kinder'} · ${next.infants2} ${next.infants2===1?'Kleinkind':'Kleinkinder'}`:'Reisedaten vervollständigen';
   showState('Deine Auszeit',next?(automatic?'Preise und Verfügbarkeit werden aktualisiert …':'Reisegruppe übernommen. Bitte Preis prüfen.'):'Bitte Reisedaten und Reisegruppe vervollständigen.');
   empty.textContent='Prüfe oben deinen Reisezeitraum, um die Kostenübersicht zu sehen.';
   updateURL(next);updateExtras();renderPrice();emitTravel();

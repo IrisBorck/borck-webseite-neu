@@ -13,7 +13,7 @@ const { maxPeople = 100 } = Astro.props;
 <p class="subtle" id="tax-category-help">Wähle pro Person genau eine zutreffende Kategorie. Eine Begleitperson ist nur bei erfüllten Voraussetzungen ermäßigt oder befreit.</p>
 <div data-person-fields class="person-fields"></div>
 <details><summary>Welche Begleitpersonen sind berechtigt?</summary><p>Ermäßigt: eine Begleitperson einer ermäßigungsberechtigten Person mit Merkzeichen B. Befreit: jeweils eine Begleitperson einer Person mit BL oder H – auch ohne Eintrag im Ausweis.</p><p>Bei BL/H müssen die Kosten des Aufenthaltes und der Kur vollständig selbst getragen werden. Bei GdB mindestens 50 mit G/aG darf die Kurabgabe nicht vollständig durch einen anderen Träger übernommen werden. Bitte wähle eine Sonderkategorie nur, wenn die Voraussetzungen erfüllt sind.</p></details>
-<p class="subtle privacy">Deine Angaben zu Ermäßigung und Befreiung werden nur hier im Browser berechnet, nicht gespeichert und nicht an Smoobu übermittelt. Es werden keine Namen oder Nachweise benötigt.</p>
+<p class="subtle privacy">Deine Angaben zu Ermäßigung und Befreiung werden nur hier im Browser berechnet, nicht gespeichert und nicht an das Buchungsformular übermittelt. Es werden keine Namen oder Nachweise benötigt.</p>
 <button type="reset" class="reset">Sonderangaben zurücksetzen</button>
 </div>
 <template id="tax-person-template"><label><span>Person <span data-person-number></span></span><select aria-describedby="tax-category-help">{taxCategories.map(c => <option value={c.id}>{c.label}</option>)}</select></label></template>

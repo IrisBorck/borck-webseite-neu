@@ -13,8 +13,8 @@ const { apartment, compact = false } = Astro.props;
 <details class="booking-disclosure" data-booking data-apartment-id={apartment.apartmentId}>
 <summary class="button" aria-controls="booking-panel"><span class="closed-label">{compact ? "Zur Buchung" : "Jetzt buchen"}</span><span class="open-label">Buchungsmaske schließen</span></summary>
 <div id="booking-panel" class="booking-panel">
-<p class="small-note">Das Buchungsformular wird von Smoobu bereitgestellt. Hier vorgenommene Buchungen sind verbindlich.</p>
-<iframe data-booking-frame data-src={apartment.url} id={`booking-tool-iFrame-apartment${apartment.apartmentId}`} title={`${apartment.name} bei Smoobu buchen`} referrerpolicy="strict-origin-when-cross-origin" height="900"></iframe>
+<p class="small-note">Im folgenden Buchungsformular kannst du deinen Aufenthalt verbindlich buchen.</p>
+<iframe data-booking-frame data-src={apartment.url} id={`booking-tool-iFrame-apartment${apartment.apartmentId}`} title={`${apartment.name} buchen`} referrerpolicy="strict-origin-when-cross-origin" height="900"></iframe>
 <p class="small-note">Falls das Formular nicht vollständig angezeigt wird: <a data-booking-window href={apartment.url} target="_blank" rel="noopener noreferrer">Buchungsformular in einem eigenen Fenster öffnen</a>.</p>
 </div>
 </details>

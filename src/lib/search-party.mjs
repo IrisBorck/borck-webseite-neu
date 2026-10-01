@@ -27,5 +27,5 @@ export function searchTravelURL(href, travel, origin) {
   return url;
 }
 export function partySummary(party) {
-  return `${party.totalPeople} Reisende insgesamt · ${party.guests} reguläre Schlafplätze · ${party.infants2} Kleinkinder bis 2 Jahre`;
+  return `${party.totalPeople} Reisende insgesamt · ${party.guests} reguläre Schlafplätze · ${party.infants2} ${party.infants2===1?'Kleinkind':'Kleinkinder'} bis 2 Jahre`;
 }
