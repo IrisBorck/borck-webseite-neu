@@ -1,4 +1,5 @@
 import { readTravel, todayISO } from './travel-search.mjs';
+import { readSearchTravel } from './search-party.mjs';
 import { accommodationQuote } from './apartment-quotes.mjs';
 
 // Only public journey data is shared. Age, disability and eligibility stay in the calculator.
@@ -21,17 +22,15 @@ export function saphirResult(data, travel) {
   return item;
 }
 export function compatibleTax(tax, travel) {
-  return Boolean(travel && tax && tax.arrival === travel.arrival && tax.departure === travel.departure && tax.people === travel.guests && Number.isSafeInteger(tax.cents) && tax.cents >= 0);
+  return Boolean(travel && tax && tax.arrival === travel.arrival && tax.departure === travel.departure && tax.people === (travel.totalPeople ?? travel.guests) && Number.isSafeInteger(tax.cents) && tax.cents >= 0);
 }
 
 // These age bands belong to the local tax calculation, not provider age bands.
 export function readSaphirJourney(params, today = todayISO()) {
-  const a = params.get('adults16'), c = params.get('children15');
-  if (!/^[0-4]$/.test(a || '') || !/^[0-4]$/.test(c || '')) return null;
-  const guests = Number(a) + Number(c);
-  if (guests < 1 || guests > 4 || (params.has('guests') && params.get('guests') !== String(guests))) return null;
-  const travel = saphirTravel(new URLSearchParams({arrival:params.get('arrival') || '',departure:params.get('departure') || '',guests:String(guests)}),today);
-  return travel ? {...travel, adults16:Number(a), children15:Number(c)} : null;
+  const journey = readSearchTravel(params, today);
+  // children15 is derived only for the unchanged local tax rules, never guessed.
+  return journey && journey.guests <= 4
+    ? {...journey, children15: journey.children3to15 + journey.infants2} : null;
 }
 export const emptyExtras = () => ({linen:0,towels:0,cot:0,chair:0,dogs:0});
 export function selectedExtras(values, guests) {

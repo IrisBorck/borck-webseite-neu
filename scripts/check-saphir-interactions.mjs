@@ -35,12 +35,12 @@ hiddenFlow();
 assert.equal(pending.length,0,'Unconfirmed age split must not start a query');
 assert.equal($('[name=arrival]').value,'2026-10-05');
 assert.equal($('[name=departure]').value,'2026-10-09');
-assert.equal($('[name=adults16]').value,'');assert.equal($('[name=children15]').value,'');
+assert.equal($('[name=adults16]').value,'');assert.equal($('[name=children3to15]').value,'');
 assert.match(text('[data-group-note]'),/2 Personen/);
 assert.equal($('[data-tax-result]').hidden,true);
 const reply = (request,item) => request.resolve({ok:true,json:async()=>({travel:{arrival:request.url.searchParams.get('arrival'),departure:request.url.searchParams.get('departure'),guests:Number(request.url.searchParams.get('guests'))},apartments:[{id:'saphir',...item}]})});
 const search=()=>event($('#saphir-travel-form'),'submit');
-fill('[name=adults16]','1');fill('[name=children15]','1');
+fill('[name=adults16]','1');fill('[name=children3to15]','1');fill('[name=infants2]','0');
 assert.equal($('[data-tax-result]').hidden,false,'Normal tax is automatic');
 assert.match(text('[data-tax-amount]'),/20,00/);
 hiddenFlow();
@@ -98,7 +98,7 @@ assert.match(text('[data-stay-price]'),/nicht verfügbar/);hiddenFlow();
 for(const status of ['restriction','unknown']){search();reply(pending.at(-1),{status});await tick();hiddenFlow();}
 fill('[name=adults16]','4');assert.equal($('[data-extra=linen]').value,'2','Keep selections during incomplete/invalid edits');assert.equal($('[data-tax-result]').hidden,true,'Five guests rejected');
 const count=pending.length;search();assert.equal(pending.length,count);
-fill('[name=children15]','0');assert.match(text('[data-tax-amount]'),/80,00/);
+fill('[name=children3to15]','0');assert.match(text('[data-tax-amount]'),/80,00/);
 fill('[data-extra=linen]','4');fill('[name=adults16]','1');
 assert.equal($('[data-extra=linen]').value,'1','Bedding limited after smaller party');
 assert.match(text('[data-extras-note]'),/angepasst/);
@@ -109,9 +109,9 @@ assert.match(text('[data-tax-price]'),/nicht berechenbar/);assertTotal();assert.
 $('[data-booking] summary').click();await tick();assert.equal($('[data-booking]').open,true);
 $('[data-booking] summary').click();await tick();assert.equal($('[data-booking]').open,false);
 // Reload/BFCache journey contains only explicitly provided age bands.
-w.history.replaceState(null,'','?arrival=2026-10-05&departure=2026-10-09&guests=3&adults16=2&children15=1');
+w.history.replaceState(null,'','?arrival=2026-10-05&departure=2026-10-09&guests=3&adults16=2&children3to15=1&infants2=0');
 w.dispatchEvent(new w.PageTransitionEvent('pageshow',{persisted:true}));
-assert.equal($('[name=adults16]').value,'2');assert.equal($('[name=children15]').value,'1');
+assert.equal($('[name=adults16]').value,'2');assert.equal($('[name=children3to15]').value,'1');
 assert.match(text('[data-tax-amount]'),/40,00/);
 // Shared shell: menu, gallery and dialog-specific focus restoration.
 $('.menu-toggle').click(); assert.equal($('.menu-toggle').getAttribute('aria-expanded'),'true');
@@ -140,3 +140,59 @@ resize(900,w); assert.equal(calendar.height,'310','Ignore foreign sender');
 resize(10001); assert.equal(calendar.height,'310','Ignore invalid height');
 w.close();
 console.log('Saphir-DOM geprüft: gemeinsame Altersgruppen, automatische Kurabgabe/Sonderfälle, Extras/Gesamtkosten, konkrete Änderungswarnung, Preis und Kurabgabe, offene/geschlossene Buchungsmaske, separate URL, Datumswechsel, verspätete Antworten, Mindestaufenthalt, Fehler/Fallback, Menü, alle 14 Fotos, Tastatur/Fokusrückgabe und Kalenderhöhe.');
+
+// Complete incoming age groups: check exactly once, reveal the existing flow,
+// and never ask the guest to repeat the party or manually repeat the price check.
+async function incoming(query) {
+  const dom=new JSDOM(html,{url:'https://irisborck.github.io/borck-webseite-neu/apartments/saphir/'+query,runScripts:'outside-only',pretendToBeVisual:true});
+  const w=dom.window, q=selector=>w.document.querySelector(selector), requests=[];
+  w.Date=class extends Date {constructor(...args){super(...(args.length?args:['2026-09-28T12:00:00Z']));}};
+  w.AbortController=AbortController;w.matchMedia=()=>({matches:false,addEventListener(){}});
+  w.ResizeObserver=class{observe(){}};w.HTMLElement.prototype.scrollIntoView=function(){};
+  w.fetch=(url,options)=>new Promise((resolve,reject)=>requests.push({url:new URL(url),options,resolve,reject}));
+  q('[data-saphir-booking]').dataset.endpoint='https://api.nordsee-buesum-fewo.de/availability';
+  await tick();w.eval(outputFiles[0].text);
+  const change=(name,value)=>{const f=q(`[name=${name}]`);f.value=value;f.dispatchEvent(new w.Event('input',{bubbles:true}));f.dispatchEvent(new w.Event('change',{bubbles:true}));};
+  return {w,q,requests,change};
+}
+const debounce=()=>new Promise(resolve=>setTimeout(resolve,350));
+const familyQuery='?arrival=2026-10-05&departure=2026-10-09&guests=4&adults16=2&children3to15=2&infants2=1';
+const family=await incoming(familyQuery), f=family.q;
+assert.equal(family.requests.length,1);
+family.w.dispatchEvent(new family.w.PageTransitionEvent('pageshow'));await debounce();assert.equal(family.requests.length,1);
+assert.equal(f('[data-journey-editor]').open,false);
+assert.equal(f('#saphir-travel-form [type=submit]').hidden,true);
+for(const [key,value] of Object.entries({adults16:'2',children3to15:'2',infants2:'1'}))assert.equal(f(`[name=${key}]`).value,value);
+assert.match(f('[data-group-note]').textContent,/5 Personen insgesamt · 4 reguläre Schlafplätze/);
+assert.equal(family.requests[0].url.searchParams.get('guests'),'4');
+assert.deepEqual([...family.requests[0].url.searchParams.keys()].sort(),['arrival','departure','guests']);
+assert.match(f('[data-tax-amount]').textContent,/40,00/);
+assert.equal(f('[data-tax-result]').querySelectorAll('h4').length,5,'All five travellers retained in local tax');
+reply(family.requests[0],{status:'available',baseCents:42000,currency:'EUR'});await tick();
+assert.equal(f('[data-booking-flow]').hidden,false);
+assert.match(f('[data-price-sum]').textContent,/545,00/);
+assert.equal(f('[data-book-saphir]').textContent,'Zur Buchung');
+assert.match(f('[data-travel-summary]').textContent,/2 Erw. · 2 Kinder · 1 Kleinkinder/);
+assert.equal(f('[data-booking-frame]').hasAttribute('src'),false,'Background price check never opens provider booking');
+f('#saphir-travel-form').dispatchEvent(new family.w.Event('submit',{bubbles:true,cancelable:true}));assert.equal(family.requests.length,1,'Enter on confirmed state cannot repeat the check');
+f('[data-edit-travel]').click();assert.equal(f('[data-journey-editor]').open,true);
+family.change('departure','2026-10-10');family.change('departure','2026-10-11');await debounce();assert.equal(family.requests.length,2);
+assert.equal(f('[data-booking-flow]').hidden,true);
+const obsolete=family.requests[1];family.change('infants2','2');assert.equal(obsolete.options.signal.aborted,true);await debounce();assert.equal(family.requests.length,3);
+reply(family.requests[2],{status:'unavailable'});await tick();reply(obsolete,{status:'available',baseCents:1,currency:'EUR'});await tick();
+assert.equal(f('[data-booking-flow]').hidden,true);assert.match(f('[data-primary-status]').textContent,/nicht verfügbar/);
+const back=new URL(f('[data-back-apartments]').href);assert.equal(back.pathname,'/borck-webseite-neu/apartments/');assert.equal(back.searchParams.get('infants2'),'2');
+assert.equal(f('[data-book-saphir]').textContent,'Zeitraum ändern');
+family.change('departure','2026-10-05');await debounce();assert.equal(family.requests.length,3,'Invalid dates never requery');
+family.w.close();
+const direct=await incoming('');assert.equal(direct.requests.length,0);assert.equal(direct.q('[data-journey-editor]').open,true);assert.equal(direct.q('[type=submit]').hidden,false);
+for(const [key,value] of Object.entries({arrival:'2026-10-05',departure:'2026-10-09',adults16:'2',children3to15:'2',infants2:'1'}))direct.change(key,value);
+await debounce();assert.equal(direct.requests.length,0,'Direct first entry retains its explicit check button');
+direct.q('#saphir-travel-form').dispatchEvent(new direct.w.Event('submit',{cancelable:true,bubbles:true}));assert.equal(direct.requests.length,1);
+reply(direct.requests[0],{status:'available',baseCents:42000,currency:'EUR'});await tick();assert.equal(direct.q('[data-booking-flow]').hidden,false);
+direct.w.dispatchEvent(new direct.w.PageTransitionEvent('pagehide'));
+direct.w.dispatchEvent(new direct.w.PageTransitionEvent('pageshow',{persisted:true}));assert.equal(direct.requests.length,2,'Back refreshes the preserved journey once');
+assert.equal(direct.q('[name=infants2]').value,'1');
+reply(direct.requests[1],{status:'minimum_stay',minimumNights:5});await tick();assert.equal(direct.q('[data-booking-flow]').hidden,true);
+direct.w.close();
+console.log('Saphir-Automatik geprüft: Dreiteilung 2+2+1, genau ein Hintergrundaufruf, direkter Einstieg, Änderungen ohne Prüfklick, Buchungsfreigabe nur nach Bestätigung, Sticky, Kurabgabe, verspätete Antworten und Zurücknavigation.');

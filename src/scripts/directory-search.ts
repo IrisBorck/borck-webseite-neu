@@ -7,7 +7,6 @@ const form=document.querySelector<HTMLFormElement>('#directory-search')!;
 const arrival=form.elements.namedItem('arrival') as HTMLInputElement;
 const departure=form.elements.namedItem('departure') as HTMLInputElement;
 const partyField=(key:string)=>form.elements.namedItem(key) as HTMLInputElement;
-const button=form.querySelector<HTMLButtonElement>('[type=submit]')!;
 const status=document.querySelector<HTMLElement>('#travel-status')!;
 const results=document.querySelector<HTMLElement>('#search-results')!;
 const cards=[...document.querySelectorAll<HTMLElement>('[data-directory-apartment]')];
@@ -15,6 +14,9 @@ const links=[...document.querySelectorAll<HTMLAnchorElement>('[data-travel-link]
 const euro=new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'});
 let controller:AbortController|null=null;
 let generation=0;
+let timer:ReturnType<typeof setTimeout>|undefined;
+let observed="";
+const fingerprint=()=>JSON.stringify([...new FormData(form)]);
 const currentTravel=()=>readSearchTravel(new URLSearchParams(new FormData(form) as any)) as Travel|null;
 function cardState(card:HTMLElement,message:string,label='Apartment ansehen') {
   card.querySelector<HTMLElement>('[data-card-status]')!.textContent=message;
@@ -26,8 +28,8 @@ function cardState(card:HTMLElement,message:string,label='Apartment ansehen') {
 }
 function updateLinks(travel:Travel|null) {links.forEach(link=>link.href=searchTravelURL(link.href,travel,location.origin).href);}
 function invalidate() {
-  generation++; controller?.abort(); controller=null;
-  button.disabled=false; results.removeAttribute('aria-busy');
+  clearTimeout(timer); generation++; controller?.abort(); controller=null;
+  results.removeAttribute('aria-busy');
   arrival.min=todayISO(); departure.min=arrival.value||arrival.min;
   departure.setCustomValidity(arrival.value&&departure.value&&departure.value<=arrival.value?'Die Abreise muss nach der Anreise liegen.':'');
   const party=readParty(new URLSearchParams(new FormData(form) as any));
@@ -35,7 +37,7 @@ function invalidate() {
   form.querySelector<HTMLElement>('[data-party-note]')!.textContent=party ? partySummary(party) : 'Bitte vervollständige deine Reisegruppe. Kleinkinder bis 2 Jahre zählen nicht zur regulären Maximalbelegung.';
   const travel=currentTravel(); updateLinks(travel);
   history.replaceState(null,'',searchTravelURL(location.href,travel,location.origin));
-  status.textContent=travel?'Reisedaten ausgewählt. Bitte Preise und Verfügbarkeit prüfen.':'Wähle deinen Reisezeitraum und deine Reisegruppe.';
+  status.textContent=travel?'Preise und Verfügbarkeit werden aktualisiert …':'Wähle deinen Reisezeitraum und deine Reisegruppe.';
   cards.forEach(card=>cardState(card,'Preis & Verfügbarkeit nach Reisedatum','Ansehen & buchen'));
 }
 function render(card:HTMLElement,item:Result,travel:Travel) {
@@ -76,14 +78,14 @@ function checkedResults(data:any,travel:Travel):Result[] {
 }
 async function search() {
   arrival.min=todayISO();
-  if(!form.reportValidity()) return;
+  if(!form.checkValidity()) return;
   const travel=currentTravel(); if(!travel) return;
   controller?.abort(); const request=new AbortController(); controller=request;
   const run=++generation;
   updateLinks(travel); history.replaceState(null,'',searchTravelURL(location.href,travel,location.origin));
   cards.forEach(card=>cardState(card,'Wird geprüft …'));
-  status.textContent='Preise und Verfügbarkeit werden geprüft …';
-  results.setAttribute('aria-busy','true'); button.disabled=true;
+  status.textContent='Preise und Verfügbarkeit werden aktualisiert …';
+  results.setAttribute('aria-busy','true');
   const timeout=setTimeout(()=>request.abort(),12000);
   try {
     const endpoint=form.dataset.endpoint;
@@ -102,23 +104,28 @@ async function search() {
     status.textContent='Die Suche ist gerade nicht möglich. Ruf Iris an: 0172 7952082.';
   } finally {
     clearTimeout(timeout);
-    if(run===generation) {controller=null;button.disabled=false;results.removeAttribute('aria-busy');results.focus({preventScroll:true});}
+    if(run===generation) {controller=null;results.removeAttribute('aria-busy');}
   }
 }
 arrival.min=todayISO(); departure.min=arrival.min;
-form.addEventListener('input',invalidate);
-form.addEventListener('change',invalidate);
-form.addEventListener('submit',event=>{event.preventDefault();void search();});
-document.querySelector('#clear-search')!.addEventListener('click',()=>{form.reset();invalidate();arrival.focus();});
+function changed() {
+  const key=fingerprint(); if(key===observed)return;
+  observed=key; invalidate();
+  if(currentTravel() && form.checkValidity())timer=setTimeout(()=>void search(),300);
+}
+form.addEventListener('input',changed);
+form.addEventListener('change',changed);
+form.addEventListener('submit',event=>{event.preventDefault();changed();});
+document.querySelector('#clear-search')!.addEventListener('click',()=>{form.reset();invalidate();observed=fingerprint();arrival.focus();});
 function restoreSearch() {
   const params=new URLSearchParams(location.search), restored=readSearchTravel(params);
   const legacy=!partyKeys.some(key=>params.has(key)) ? readTravel(params) : null;
   arrival.value=restored?.arrival || legacy?.arrival || ''; departure.value=restored?.departure || legacy?.departure || '';
   for(const key of partyKeys) partyField(key).value=restored ? String(restored[key]) : legacy ? '' : key==='adults16' ? '2' : '0';
-  invalidate();
+  invalidate(); observed=fingerprint();
   if(legacy) form.querySelector<HTMLElement>('[data-party-note]')!.textContent=`Übernommen: ${legacy.guests} Personen. Bitte ergänze die drei Altersgruppen; es wird keine Aufteilung angenommen.`;
   if(restored) void search();
 }
 restoreSearch();
 window.addEventListener('pageshow',event=>{if(event.persisted) restoreSearch();else updateLinks(currentTravel());});
-window.addEventListener('pagehide',()=>{generation++;controller?.abort();controller=null;});
+window.addEventListener('pagehide',()=>{clearTimeout(timer);generation++;controller?.abort();controller=null;});

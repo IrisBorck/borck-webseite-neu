@@ -52,7 +52,7 @@ for (const root of document.querySelectorAll<HTMLElement>('[data-tax-calculator]
     result.append(element('p', `Gesamt: ${euro(calculation.cents)}`, 'total'), element('p', 'Berechnung für diesen Aufenthalt. Bereits gezahlte Kurabgaben im selben Kalenderjahr oder weitere besondere Befreiungen bitte mit Iris klären.'));
     result.hidden = false; details.hidden = false; amount.textContent = euro(calculation.cents);
     // No eligibility or medical categories leave the calculator.
-    document.dispatchEvent(new CustomEvent('saphir-tax-result', {detail:{arrival:journey.arrival,departure:journey.departure,people:journey.guests,adults16:journey.adults16,children15:journey.children15,cents:calculation.cents}}));
+    document.dispatchEvent(new CustomEvent('saphir-tax-result', {detail:{arrival:journey.arrival,departure:journey.departure,people:journey.totalPeople,adults16:journey.adults16,children15:journey.children15,cents:calculation.cents}}));
 
   }
   document.addEventListener('saphir-travel-change',event=>{

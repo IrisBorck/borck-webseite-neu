@@ -1,15 +1,20 @@
 import { todayISO, travelURL, validDate, smoobuApartmentURL } from '../lib/travel-search.mjs';
 import { saphirTravel, readSaphirJourney, saphirResult, compatibleTax, emptyExtras, selectedExtras, extrasCents } from '../lib/saphir-travel.mjs';
+import { partyKeys, searchTravelURL } from '../lib/search-party.mjs';
 import { minimumStayMessage } from '../lib/apartment-quotes.mjs';
 import { euro } from '../data/booking-policy.mjs';
 
-type Journey = {arrival:string;departure:string;guests:number;adults16:number;children15:number};
+type Journey = {arrival:string;departure:string;guests:number;adults16:number;children15:number;children3to15:number;infants2:number;totalPeople:number};
 const bar = document.querySelector<HTMLElement>('[data-saphir-booking]')!;
 const form = document.querySelector<HTMLFormElement>('#saphir-travel-form')!;
 const field = (name:string) => form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement;
 const arrival = field('arrival') as HTMLInputElement, departure = field('departure') as HTMLInputElement;
 const action = bar.querySelector<HTMLButtonElement>('[data-book-saphir]')!;
 const submit = form.querySelector<HTMLButtonElement>('[type=submit]')!;
+const editor = form.querySelector<HTMLDetailsElement>('[data-journey-editor]')!;
+const back = form.querySelector<HTMLAnchorElement>('[data-back-apartments]')!;
+let automatic=false;
+let timer:ReturnType<typeof setTimeout>|undefined;
 const summary = bar.querySelector<HTMLElement>('[data-travel-summary]')!;
 const price = bar.querySelector<HTMLElement>('[data-stay-price]')!;
 const status = bar.querySelector<HTMLElement>('[data-stay-status]')!;
@@ -28,7 +33,7 @@ let generation = 0, checked = false;
 let accepted = new Map<string,string>();
 const date = (value:string) => new Date(`${value}T12:00:00Z`).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric',timeZone:'UTC'});
 const emitTravel = () => document.dispatchEvent(new CustomEvent('saphir-travel-change',{detail:travel}));
-const readForm = () => readSaphirJourney(new URLSearchParams(Object.fromEntries(['arrival','departure','adults16','children15'].map(k=>[k,field(k).value]))));
+const readForm = () => readSaphirJourney(new URLSearchParams(Object.fromEntries(['arrival','departure',...partyKeys].map(k=>[k,field(k).value]))));
 function showState(title:string,description:string) {
   price.textContent=title; status.textContent=description; primary.textContent=`${title} · ${description}`;
 }
@@ -60,26 +65,26 @@ function updateExtras() {
   extraNote.textContent=previous!==extras.linen?'Die Bettwäschemenge wurde an deine kleinere Reisegruppe angepasst.':travel?'Deine Vorauswahl wird in der Kostenübersicht berücksichtigt. Bis zu acht Handtuchpakete sind auswählbar.':'Bitte zuerst oben deine Reisegruppe angeben.';
 }
 function updateURL(next:Journey|null) {
-  const url=travelURL(location.href,next,location.origin);
-  for(const key of ['adults16','children15']) { if(next) url.searchParams.set(key,String(next[key as keyof Journey])); else url.searchParams.delete(key); }
+  const url=searchTravelURL(location.href,next,location.origin);
+  back.href=searchTravelURL(back.href,next,location.origin).href;
   history.replaceState(null,'',url);
 }
 function acceptJourney(next:Journey|null) {
-  generation++;request?.abort();request=null;travel=next;quote=null;tax=null;checked=false;
-  action.disabled=false;action.textContent='Preis prüfen'; submit.disabled=false;
-  accepted=new Map(['arrival','departure','adults16','children15'].map(k=>[k,field(k).value]));
-  if(next)groupNote.textContent=`Deine Reisegruppe: ${next.guests} Personen insgesamt.`;
-  summary.textContent=next?`${date(next.arrival)} – ${date(next.departure)} · ${next.adults16} ab 16 / ${next.children15} bis 15 Jahre`:'Reisedaten vervollständigen';
-  showState('Deine Auszeit',next?'Reisegruppe übernommen. Bitte Preis prüfen.':'Bitte Reisedaten und Reisegruppe vervollständigen.');
+  clearTimeout(timer);generation++;request?.abort();request=null;travel=next;quote=null;tax=null;checked=false;
+  action.disabled=false;action.textContent=automatic?'Reisedaten ändern':'Preis prüfen'; submit.disabled=false;submit.hidden=automatic;
+  accepted=new Map(['arrival','departure',...partyKeys].map(k=>[k,field(k).value]));
+  groupNote.textContent=next?`Deine Reisegruppe: ${next.totalPeople} Personen insgesamt · ${next.guests} reguläre Schlafplätze.`:'Bitte vervollständige die drei Altersgruppen. Kleinkinder bis 2 Jahre zählen nicht zur regulären Belegung.';
+  summary.textContent=next?`${date(next.arrival)} – ${date(next.departure)} · ${next.adults16} Erw. · ${next.children3to15} Kinder · ${next.infants2} Kleinkinder`:'Reisedaten vervollständigen';
+  showState('Deine Auszeit',next?(automatic?'Preise und Verfügbarkeit werden aktualisiert …':'Reisegruppe übernommen. Bitte Preis prüfen.'):'Bitte Reisedaten und Reisegruppe vervollständigen.');
   empty.textContent='Prüfe oben deinen Reisezeitraum, um die Kostenübersicht zu sehen.';
   updateURL(next);updateExtras();renderPrice();emitTravel();
 }
 function validate() {
   arrival.min=todayISO();departure.min=arrival.value || arrival.min;
   departure.setCustomValidity(arrival.value && departure.value && departure.value<=arrival.value?'Die Abreise muss nach der Anreise liegen.':'');
-  const a=field('adults16'),c=field('children15');
+  const a=field('adults16'),c=field('children3to15');
   const sum=Number(a.value)+Number(c.value);
-  c.setCustomValidity(a.value!=='' && c.value!=='' && (sum<1 || sum>4)?'Bitte wähle insgesamt eine bis vier Personen.':'');
+  c.setCustomValidity(a.value!=='' && c.value!=='' && (sum<1 || sum>4)?'Bitte wähle eine bis vier Personen ab 3 Jahren.':'');
 }
 function applyForm() {
   validate();
@@ -92,10 +97,11 @@ function applyForm() {
     for(const [key,value] of accepted)field(key).value=value;
     validate();return false;
   }
-  acceptJourney(next);return true;
+  acceptJourney(next);if(automatic && next)timer=setTimeout(()=>void checkPrice(),300);return true;
 }
 async function checkPrice() {
-  if(!travel)return;
+  if(!travel || request || quote)return;
+  clearTimeout(timer);
   const selected=travel,run=++generation;
   request?.abort();const controller=new AbortController();request=controller;
   action.disabled=true;submit.disabled=true;quote=null;checked=false;renderPrice();
@@ -103,7 +109,7 @@ async function checkPrice() {
   const timeout=setTimeout(()=>controller.abort(),12000);
   try {
     if(!bar.dataset.endpoint)throw Error('No endpoint');
-    // Deliberately send only the existing API's public total-person contract.
+    // Regular occupancy only: infants remain in the journey but not API guests.
     const url=travelURL(bar.dataset.endpoint,selected,location.origin);
     const response=await fetch(url,{signal:controller.signal,cache:'no-store',credentials:'omit',redirect:'error',headers:{Accept:'application/json'}});
     if(!response.ok)throw Error('Unavailable');
@@ -113,7 +119,7 @@ async function checkPrice() {
     if(item.status==='available') {
       quote=item.quote;
       showState(euro(quote.totalCents),`Verfügbar · ${quote.nights} Nächte · Unterkunft${quote.shortStayCents ? ' inkl. 85 € Zuschlag' : ''} · zzgl. Extras / Kurabgabe`);
-      action.textContent='Zur Buchung';
+      automatic=true;submit.hidden=true;editor.open=false;action.textContent='Zur Buchung';
     } else {
       showState(item.status==='minimum_stay'?minimumStayMessage(item.minimumNights,selected):item.status==='unavailable'?'Zeitraum nicht verfügbar':item.status==='restriction'?'Nicht direkt buchbar':'Preis derzeit nicht abrufbar',item.status==='minimum_stay'?'Frag Iris, ob eine kürzere Buchung möglich ist.':'Prüfe einen anderen Zeitraum.');
       action.textContent='Zeitraum ändern';empty.textContent=price.textContent;
@@ -125,9 +131,9 @@ async function checkPrice() {
     empty.textContent='Bitte versuche es erneut oder frag Iris.';action.textContent='Erneut prüfen';
   } finally {clearTimeout(timeout);if(run===generation){action.disabled=false;submit.disabled=false;request=null;}}
 }
-function editTravel(){document.getElementById('saphir-price-entry')!.scrollIntoView({block:'start'});arrival.focus({preventScroll:true});}
+function editTravel(){editor.open=true;document.getElementById('saphir-price-entry')!.scrollIntoView({block:'start'});arrival.focus({preventScroll:true});}
 bar.querySelector('[data-edit-travel]')!.addEventListener('click',editTravel);
-form.addEventListener('input',validate);
+form.addEventListener('input',()=>{validate();if(!document.querySelector<HTMLIFrameElement>('[data-booking-frame]')!.hasAttribute('src'))applyForm();});
 form.addEventListener('change',applyForm);
 form.addEventListener('submit',event=>{event.preventDefault();if(!applyForm() || !form.reportValidity() || !travel)return;void checkPrice();});
 action.addEventListener('click',()=>{
@@ -155,13 +161,16 @@ document.addEventListener('focusin',event=>{
 function restore(){
   const params=new URLSearchParams(location.search),legacy=saphirTravel(params),next=readSaphirJourney(params);
   for(const key of ['arrival','departure'])field(key).value=validDate(params.get(key))?params.get(key)!:'';
-  for(const key of ['adults16','children15'])field(key).value=next?String(next[key]):'';
+  for(const key of partyKeys)field(key).value=next?String(next[key]):'';
+  automatic=Boolean(next);editor.open=!next;
   acceptJourney(next);
+  if(next)void checkPrice();
   if(!next && legacy){
     const url=travelURL(location.href,legacy,location.origin);history.replaceState(null,'',url);
-    groupNote.textContent=`Übernommen: ${legacy.guests} Personen. Bitte gib einmal an, wie viele davon ab 16 bzw. bis 15 Jahre alt sind. Es wird keine Aufteilung angenommen.`;
+    groupNote.textContent=`Übernommen: ${legacy.guests} Personen. Bitte gib einmal an, wie viele davon ab 16, 3–15 bzw. bis 2 Jahre alt sind. Es wird keine Aufteilung angenommen.`;
   }
   validate();
 }
+window.addEventListener('pagehide',()=>{clearTimeout(timer);generation++;request?.abort();request=null;});
 window.addEventListener('pageshow',event=>{if(event.persisted)restore();});
 restore();

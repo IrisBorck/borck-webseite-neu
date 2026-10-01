@@ -22,7 +22,8 @@ for(const [guests,expected] of [[1,7],[2,7],[3,5],[4,5],[5,1]]) {
     const link=searchTravelURL('https://example.com/apartments/saphir/?children15=9#buchung',travel);
     assert.deepEqual(read(link.searchParams),travel);assert.equal(link.hash,'#buchung');assert.equal(link.searchParams.has('children15'),false);
     assert.equal(searchTravelURL(link,null).search,'');
-    assert.equal(readSaphirJourney(link.searchParams,'2026-09-30'),null,'New age bands must not silently prefill the old Saphir split');
+    const saphir=readSaphirJourney(link.searchParams,'2026-09-30');
+    if(guests<=4){assert.equal(saphir.totalPeople,guests+infants);assert.equal(saphir.children15,travel.children3to15+infants);}else assert.equal(saphir,null);
   }
 }
 const example=read(params(2,3,1));assert.equal(example.guests,5);assert.equal(example.totalPeople,6);
@@ -32,4 +33,4 @@ const duplicate=params(2,0,0);duplicate.append('adults16','1');assert.equal(read
 const mismatch=params(2,3,1);mismatch.set('guests','6');assert.equal(read(mismatch),null);
 assert.equal(read(new URLSearchParams({arrival:'2026-10-05',departure:'2026-10-09',guests:'2'})),null);
 assert.ok(readParty(params(0,2,1)),'No additional adult-only restriction');
-console.log('Drei Altersgruppen geprüft: 1–5 reguläre Personen, Kleinkinder ohne Kapazitätseinfluss, Topas 2+3+1, API-Vertrag, Links, Validierung und keine falsche Saphir-Altersübernahme.');
+console.log('Drei Altersgruppen geprüft: 1–5 reguläre Personen, Kleinkinder ohne Kapazitätseinfluss, Topas 2+3+1, API-Vertrag, Links, Validierung und vollständige Saphir-Altersübernahme.');

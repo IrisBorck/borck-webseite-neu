@@ -28,10 +28,15 @@ console.log('Saphir-Reisedaten geprüft: Kapazität, API-Zuordnung, Preis/Zuschl
 
 const journey = values => readSaphirJourney(new URLSearchParams(values),'2026-09-29');
 assert.equal(journey(travel),null,'Never infer age groups from a total');
-assert.deepEqual(journey({...travel,adults16:'1',children15:'1'}),{...travel,adults16:1,children15:1});
+assert.deepEqual(journey({...travel,adults16:'1',children3to15:'1',infants2:'1'}),{...travel,adults16:1,children3to15:1,infants2:1,totalPeople:3,children15:2});
+assert.equal(journey({...travel,adults16:1,children15:1}),null,'Old two-band data cannot imply an infant count');
+const family=journey({...travel,guests:4,adults16:2,children3to15:2,infants2:1});
+assert.equal(family.guests,4);assert.equal(family.totalPeople,5);
+assert.ok(compatibleTax({...tax,people:5},family));
+assert.equal(compatibleTax({...tax,people:4},family),false);
 for(const pair of [[0,1],[1,0],[0,4],[4,0],[2,2]]) {
- const [adults16,children15]=pair;
- assert.equal(journey({arrival:travel.arrival,departure:travel.departure,adults16,children15}).guests,adults16+children15);
+ const [adults16,children3to15]=pair;
+ assert.equal(journey({arrival:travel.arrival,departure:travel.departure,adults16,children3to15,infants2:0}).guests,adults16+children3to15);
 }
 for(const bad of [{...travel,adults16:2,children15:1},{...travel,adults16:'',children15:2},{...travel,adults16:1.5,children15:.5},{...travel,adults16:-1,children15:3},{...travel,guests:0,adults16:0,children15:0},{...travel,guests:5,adults16:3,children15:2}]) assert.equal(journey(bad),null);
 const extras=selectedExtras({linen:2,towels:3,cot:1,chair:1,dogs:2},2);
