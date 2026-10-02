@@ -1,3 +1,6 @@
+import { readParty, readSearchTravel, partySummary } from '../lib/search-party.mjs';
+import { todayISO, validDate } from '../lib/travel-search.mjs';
+
 const nav = document.querySelector<HTMLElement>('#navigation')!;
 const menu = document.querySelector<HTMLButtonElement>('.menu-toggle')!;
 function closeMenu() { nav.classList.remove('open'); menu.setAttribute('aria-expanded', 'false'); menu.setAttribute('aria-label', 'Menü öffnen'); }
@@ -9,15 +12,15 @@ window.matchMedia('(min-width: 1281px)').addEventListener('change', closeMenu);
 const filterButtons = [...document.querySelectorAll<HTMLButtonElement>('[data-filter]')];
 const cards = [...document.querySelectorAll<HTMLElement>('[data-apartment]')];
 const status = document.querySelector<HTMLElement>('#filter-status')!;
-function filterApartments(filter: string, minGuests = 0) {
+function filterApartments(filter: string) {
   let count = 0;
   cards.forEach(card => {
     const guests = Number(card.dataset.guests);
-    const fits = minGuests > 0 ? guests >= minGuests : filter === 'zwei' ? guests <= 2 : filter === 'vier' ? guests <= 4 : filter === 'fuenf' ? guests <= 5 : ['terrasse', 'balkon'].includes(filter) ? card.dataset.type === filter : true;
+    const fits = filter === 'zwei' ? guests <= 2 : filter === 'vier' ? guests <= 4 : filter === 'fuenf' ? guests <= 5 : ['terrasse', 'balkon'].includes(filter) ? card.dataset.type === filter : true;
     card.hidden = !fits; if (fits) count++;
   });
-  filterButtons.forEach(b => b.setAttribute('aria-pressed', String(!minGuests && b.dataset.filter === filter)));
-  status.textContent = `${count} ${count === 1 ? 'Apartment' : 'Apartments'} zur Auswahl${minGuests ? ` für ${minGuests} ${minGuests === 1 ? 'Person' : 'Personen'} · Verfügbarkeit noch nicht geprüft` : ''}`;
+  filterButtons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.filter === filter)));
+  status.textContent = `${count} ${count === 1 ? 'Apartment' : 'Apartments'} zur Auswahl`;
 }
 filterButtons.forEach(b => b.addEventListener('click', () => filterApartments(b.dataset.filter!)));
 document.querySelectorAll<HTMLButtonElement>('[data-theme]').forEach(b => b.addEventListener('click', () => {
@@ -26,44 +29,31 @@ document.querySelectorAll<HTMLButtonElement>('[data-theme]').forEach(b => b.addE
   document.querySelector('#apartments')!.scrollIntoView();
 }));
 
-// Kalenderdaten bewusst als lokale Kalendertage behandeln (keine DST-bedingte Nächteabweichung).
+// The homepage only forwards public travel data; the directory owns the API query.
+const form = document.querySelector<HTMLFormElement>('#availability-form')!;
 const arrival = document.querySelector<HTMLInputElement>('#arrival')!;
 const departure = document.querySelector<HTMLInputElement>('#departure')!;
-const result = document.querySelector<HTMLElement>('#booking-result')!;
-const today = new Date();
-const localDate = (d: Date) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-arrival.min = localDate(today);
-const day = (value: string) => Date.parse(`${value}T12:00:00Z`);
 function syncDates() {
-  const minimum = arrival.value || arrival.min;
-  departure.min = new Date(day(minimum) + 86400000).toISOString().slice(0,10);
-  if (departure.value && departure.value < departure.min) departure.value = departure.min;
-  departure.setCustomValidity(''); result.hidden = true;
+  const party = readParty(new URLSearchParams(new FormData(form) as any));
+  const children = form.elements.namedItem('children3to15') as HTMLInputElement;
+  children.setCustomValidity(party ? '' : 'Bitte gib ganze, nicht negative Zahlen und insgesamt eine bis fünf Personen ab 3 Jahren an.');
+  form.querySelector<HTMLElement>('[data-party-note]')!.textContent = party ? partySummary(party) : 'Bitte vervollständige deine Reisegruppe. Kleinkinder bis 2 Jahre zählen nicht zur regulären Maximalbelegung.';
+  arrival.min = todayISO();
+  const minimum = validDate(arrival.value) ? arrival.value : arrival.min;
+  departure.min = new Date(Date.parse(`${minimum}T12:00:00Z`) + 86400000).toISOString().slice(0,10);
+  departure.setCustomValidity(arrival.value && departure.value && departure.value <= arrival.value ? 'Bitte wähle eine Abreise nach der Anreise.' : '');
 }
-arrival.addEventListener('input', syncDates);
-arrival.addEventListener('change', syncDates);
-departure.addEventListener('input', syncDates);
-departure.addEventListener('change', syncDates);
+form.addEventListener('input', syncDates);
+form.addEventListener('change', syncDates);
 syncDates();
 // Reset native restored accordion state on initial load and back/forward navigation.
 function closeFaqs() { document.querySelectorAll<HTMLDetailsElement>('.faq-list details').forEach(d => d.open = false); }
 closeFaqs();
 window.addEventListener('pageshow', () => { closeFaqs(); syncDates(); });
-let chosenApartment = '';
-document.querySelector<HTMLFormElement>('#availability-form')!.addEventListener('submit', e => {
-  e.preventDefault();
-  const nights = Math.round((day(departure.value) - day(arrival.value)) / 86400000);
-  if (!Number.isFinite(nights) || nights < 1) { departure.setCustomValidity('Bitte wähle eine Abreise nach der Anreise.'); departure.reportValidity(); return; }
-  const guests = Number(document.querySelector<HTMLSelectElement>('#guests')!.value);
-  const format = (s: string) => new Date(`${s}T12:00:00`).toLocaleDateString('de-DE');
-  result.replaceChildren();
-  const heading = document.createElement('strong');
-  heading.textContent = `${chosenApartment ? chosenApartment + ' · ' : ''}${format(arrival.value)} – ${format(departure.value)} · ${nights} ${nights === 1 ? 'Nacht' : 'Nächte'} · ${guests} ${guests === 1 ? 'Person' : 'Personen'}`;
-  const notice = document.createElement('p');
-  notice.textContent = 'Deine Auswahl wurde nur in dieser Vorschau übernommen. Es wurde keine Verfügbarkeit abgefragt und keine Buchung angelegt. Preise und die geprüfte Buchungsanbindung folgen später.';
-  const link = document.createElement('a'); link.className = 'text-link'; link.href = '#apartments'; link.textContent = 'Apartments nach Personenzahl ansehen →';
-  link.addEventListener('click', () => filterApartments('alle', guests));
-  result.append(heading, notice, link); result.hidden = false; result.focus({ preventScroll: true });
+form.addEventListener('submit', e => {
+  syncDates();
+  if (!form.reportValidity() || !readSearchTravel(new URLSearchParams(new FormData(form) as any))) e.preventDefault();
+  // Valid submissions use the native GET form action, preserving browser Back.
 });
 
 let previousFocus: HTMLElement | null = null;
@@ -77,7 +67,6 @@ document.querySelectorAll<HTMLDialogElement>('dialog').forEach(dialog => {
   dialog.addEventListener('click', event => { if (event.target === dialog) { const r = dialog.getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) dialog.close(); } });
   dialog.addEventListener('close', () => { document.body.style.overflow = ''; previousFocus?.focus({ preventScroll: true }); });
   dialog.querySelector<HTMLAnchorElement>('.dialog-book')?.addEventListener('click', event => {
-    chosenApartment = (event.currentTarget as HTMLElement).dataset.select || '';
     dialog.close();
     // Nach dem nativen Fokus-Restore landet die Bedienung direkt im Datumsfeld.
     window.setTimeout(() => arrival.focus({ preventScroll: true }), 0);

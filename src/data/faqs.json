@@ -12,7 +12,7 @@
     "name": "Wie und wann muss ich bezahlen?",
     "acceptedAnswer": {
       "@type": "Answer",
-      "text": "<p>Du kannst <strong>per Überweisung oder per Kreditkarte</strong> bezahlen.</p><p>Bei einer <strong>Überweisung</strong> kannst du entweder den <strong>gesamten Reisepreis auf einmal</strong> zahlen oder zunächst eine <strong>Anzahlung von 50 € innerhalb von 7 Tagen nach der Buchungsbestätigung</strong> leisten. Der <strong>Restbetrag ist spätestens 30 Tage vor Anreise</strong> fällig.</p><p>Bei einer <strong>Kreditkartenzahlung</strong> wird der <strong>gesamte Reisepreis bei der Buchung</strong> bezahlt.</p><p>Bei <strong>kurzfristigen Buchungen innerhalb von 30 Tagen vor Anreise</strong> ist der <strong>Gesamtbetrag sofort fällig</strong>.</p>"
+      "text": "<p>Du kannst <strong>per Überweisung oder Kreditkarte</strong> bezahlen. Welche Zahlungsoptionen für deine Buchung angeboten werden, siehst du im Buchungsformular.</p><p>Regulär zahlst du zunächst <strong>50 € Anzahlung innerhalb von 7 Tagen nach der Buchungsbestätigung</strong>. Der <strong>Restbetrag ist 30 Tage vor Anreise</strong> fällig. Bei einer <strong>Buchung innerhalb von 30 Tagen vor Anreise</strong> ist der <strong>Gesamtbetrag sofort fällig</strong>.</p><p>Eine zusätzliche Auswahl <strong>„Gesamtbetrag jetzt bezahlen“</strong> ist für die künftige eigene Buchungsmaske vorgesehen und steht hier noch nicht als eigene Funktion bereit. Eine automatische Kartenabbuchung wird durch diese Angaben nicht ausgelöst.</p>"
     }
   },
   {

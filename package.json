@@ -8,11 +8,26 @@
   },
   "scripts": {
     "dev": "astro dev --host 0.0.0.0",
-    "build": "astro build && node scripts/check-build.mjs && node scripts/check-saphir.mjs && node scripts/check-visitor-tax.mjs",
-    "preview": "astro preview --host 0.0.0.0"
+    "build": "astro build && node scripts/check-build.mjs && node scripts/check-home-search.mjs && node scripts/check-saphir.mjs && node scripts/check-visitor-tax.mjs && node scripts/check-saphir-interactions.mjs",
+    "preview": "astro preview --host 0.0.0.0",
+    "test:apartments": "node scripts/check-apartment-quotes.mjs && node scripts/check-availability-server.mjs && node scripts/check-travel-search.mjs && node scripts/check-saphir-travel.mjs && node scripts/check-search-party.mjs",
+    "start:availability": "node server/start.mjs",
+    "start:booking": "node server/booking/start.mjs",
+    "test:booking": "node --test scripts/booking/*.test.mjs",
+    "booking:migrate": "node scripts/booking/admin.mjs migrate",
+    "booking:preflight": "node scripts/booking/admin.mjs preflight",
+    "test:booking:browser": "node scripts/booking/browser.mjs"
   },
   "dependencies": {
-    "astro": "7.0.7",
-    "iframe-resizer": "3.5.16"
+    "astro": "7.3.5",
+    "iframe-resizer": "3.5.16",
+    "pg": "8.23.1"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
+    "@sparticuz/chromium": "153.0.0",
+    "esbuild": "0.28.2",
+    "jsdom": "26.1.0",
+    "playwright": "1.63.0"
   }
 }

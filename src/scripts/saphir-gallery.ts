@@ -39,5 +39,5 @@ window.addEventListener('message', event => {
   const { height, ready } = event.data;
   if (typeof height !== 'number' || !Number.isFinite(height) || height < 30 || height > 10000) return;
   calendar.height = String(Math.ceil(height));
-  if (ready === true) document.getElementById('calendar-status')!.textContent = 'Original-Belegungskalender von Smoobu. Preise und Buchung findest du im Buchungsformular.';
+  document.getElementById('calendar-status')!.hidden = ready === true;
 });

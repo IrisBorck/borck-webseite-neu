@@ -6,14 +6,14 @@ nav.querySelectorAll('a, [data-open]').forEach(a => a.addEventListener('click', 
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && nav.classList.contains('open')) { closeMenu(); menu.focus(); } });
 window.matchMedia('(min-width: 1281px)').addEventListener('change', closeMenu);
 
-let previousFocus: HTMLElement | null = null;
+const dialogOpeners = new WeakMap<HTMLDialogElement, HTMLElement>();
 document.querySelectorAll<HTMLButtonElement>('[data-open]').forEach(button => button.addEventListener('click', () => {
   const dialog = document.getElementById(button.dataset.open!) as HTMLDialogElement | null;
   if (!dialog) return;
-  previousFocus = button; dialog.showModal(); document.body.style.overflow = 'hidden';
+  dialogOpeners.set(dialog, button); dialog.showModal(); document.body.style.overflow = 'hidden';
 }));
 document.querySelectorAll<HTMLDialogElement>('dialog').forEach(dialog => {
   dialog.querySelector('.dialog-close')?.addEventListener('click', () => dialog.close());
   dialog.addEventListener('click', event => { if (event.target === dialog) { const r = dialog.getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) dialog.close(); } });
-  dialog.addEventListener('close', () => { document.body.style.overflow = ''; previousFocus?.focus({ preventScroll: true }); });
+  dialog.addEventListener('close', () => { document.body.style.overflow = ''; dialogOpeners.get(dialog)?.focus({ preventScroll: true }); });
 });

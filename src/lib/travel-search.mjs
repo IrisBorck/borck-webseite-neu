@@ -1,4 +1,5 @@
 // Public travel data only. No guest identities, cookies or persistent storage.
+import { searchApartments } from '../data/apartment-search.mjs';
 export const travelKeys = ['arrival', 'departure', 'guests'];
 export function todayISO() {
   const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Berlin', year:'numeric', month:'2-digit', day:'2-digit' }).formatToParts(new Date());
@@ -33,5 +34,19 @@ export function smoobuSearchURL(travel) {
     url.searchParams.set('children', '0');
     url.searchParams.set('loadForCurrentDate', 'true');
   }
+  return url;
+}
+
+// Shared by apartment booking forms. Only the seven configured provider IDs
+// are allowed; invalid/expired travel falls back to an unfilled apartment form.
+export function smoobuApartmentURL(apartmentId, travel, today = todayISO()) {
+  const apartment = searchApartments.find(a => String(a.providerId) === String(apartmentId));
+  if (!apartment) throw Error('Unknown apartment');
+  const validated = travel ? readTravel(new URLSearchParams({
+    arrival: travel.arrival, departure: travel.departure, guests: String(travel.guests),
+  }), today) : null;
+  const url = smoobuSearchURL(validated);
+  // Keep the existing total-person mapping; no new adult/child selection.
+  url.searchParams.set('apartmentId', String(apartment.providerId));
   return url;
 }

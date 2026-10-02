@@ -20,9 +20,11 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
+      - run: npm run test:apartments
       - run: npm run build
         env:
           ASTRO_TELEMETRY_DISABLED: '1'
+          PUBLIC_AVAILABILITY_URL: ${{ vars.PUBLIC_AVAILABILITY_URL }}
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

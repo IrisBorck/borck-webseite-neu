@@ -11,3 +11,16 @@
 - Historisches Logo unverändert lassen. Keine generierten Unterkunfts-/Landschaftsbilder.
 - Seegrün #43b5ae, Navy #1e375a, Sand #faf7f1, Aqua #eef8f7, Weiß; Manrope und Source Sans 3.
 - Bei Änderungen `npm run build` ausführen; Menü, Dialoge, Datumswahl und mobile Buchungsleiste bei relevanten Änderungen im Browser prüfen.
+## Standardmodus für Work / Agenten
+
+- Standardmäßig ausschließlich lesend arbeiten und zuerst den aktuellen Stand prüfen und berichten.
+- Ohne ausdrückliche Freigabe von Iris keine Dateien verändern.
+- Ohne ausdrückliche Freigabe keine Commits oder Pushes erstellen.
+- Ohne ausdrückliche Freigabe keine Pull Requests verändern, mergen oder schließen.
+- Ohne ausdrückliche Freigabe keine GitHub Actions, Repository-Einstellungen, Variablen, Secrets oder Deployments verändern.
+- Ohne ausdrückliche Freigabe nichts veröffentlichen oder auf eine Test- oder Produktivwebsite deployen.
+- Ohne ausdrückliche Freigabe keine Änderungen am VPS, an DNS, IONOS, Smoobu oder anderen externen Systemen vornehmen.
+- Keine Anmeldung mit Iris' persönlichem GitHub-Konto im Cloud-Browser anfordern oder verwenden, solange dies nicht ausdrücklich freigegeben wurde.
+- Ein Prüfauftrag, Statusabgleich oder technischer Bericht ist keine Änderungsfreigabe.
+- Änderungen dürfen erst nach einer klaren, auf den konkreten nächsten Schritt bezogenen Freigabe von Iris umgesetzt werden.
+
