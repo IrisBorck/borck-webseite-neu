@@ -82,3 +82,67 @@ test('four/five night fee, extras and Berlin payment boundary',()=>{
  assert.deepEqual(paymentPlan(60760,SCOPE.arrival,new Date('2026-10-09T12:00:00Z')),[{kind:'deposit',cents:5000,due:'2026-10-10'},{kind:'balance',cents:55760,due:'2026-10-10'}]);
  assert.deepEqual(paymentPlan(60760,SCOPE.arrival,new Date('2026-10-10T12:00:00Z')),[{kind:'full',cents:60760,due:'2026-10-10'}]);
 });
+
+test('account-specific channel is required; POST channel cannot substitute for readback channel',async t=>{
+ const f=await fixture(t),input=await submission(f);
+ const read=f.provider.read.bind(f.provider);
+ f.provider.read=async id=>({...await read(id),channel:{id:70,name:'Website'}});
+ const b=await f.service.submit(input);
+ assert.equal(b.state,'review');assert.equal(b.reason,'reservation_mismatch');
+ assert.equal((await f.service.reconcile(b.id)).state,'review');
+ assert.equal((await f.service.recheckReview(b.id)).state,'review');
+ assert.equal(f.provider.calls,1);
+});
+test('controlled review recovery uses the same reservation with writes disabled, preserves slot and audits confirmation',async t=>{
+ const f=await fixture(t),input=await submission(f);
+ // Simulate the old incorrect expectation; the provider returns a different account ID.
+ f.provider.reservationChannelId=70;
+ const b=await f.service.submit(input);assert.equal(b.state,'review');
+ f.provider.reservationChannelId=700070;
+ f.provider.mode='live';
+ f.provider.create=async()=>{assert.fail('Review must never create a reservation');};
+ const restarted=new BookingService({...f,env:{},clock:()=>now});
+ const result=await restarted.recheckReview(b.id);
+ assert.equal(result.state,'confirmed');assert.equal(result.reservationId,b.reservationId);
+ assert.equal(result.attempts,1);assert.equal(f.provider.calls,1);
+ assert.equal((await restarted.submit(input)).id,b.id);
+ assert.equal((await f.db.query('SELECT booking_id FROM aq_pilot_slots')).rows[0].booking_id,b.id);
+ assert.equal((await f.db.query("SELECT count(*)::int AS n FROM aq_booking_events WHERE booking_id=$1 AND state='confirmed'",[b.id])).rows[0].n,1);
+ await assert.rejects(()=>restarted.recheckReview(b.id),/review_not_eligible/);
+});
+test('review recovery cannot bypass wrong data, calendar check, read errors or activation guard',async t=>{
+ const f=await fixture(t),input=await submission(f);f.provider.reservationChannelId=70;
+ const b=await f.service.submit(input);f.provider.reservationChannelId=700070;
+ const raw=f.provider.records.get(b.reservationId);
+ const badFields=[{id:b.reservationId+1},{channel:{id:999,name:'Website'}},{apartment:{id:1}},
+  {arrival:'2026-11-10'},{departure:'2026-11-15'},{adults:3},{children:1},
+  {price:1},{prepayment:1},{email:randomUUID()+'@example.invalid'},{notice:''},
+  {type:'cancellation'},{'is-blocked-booking':true}];
+ for(const change of badFields){
+  f.provider.records.set(b.reservationId,{...raw,...change});
+  const result=await f.service.recheckReview(b.id);
+  assert.equal(result.state,'review',JSON.stringify(Object.keys(change)));
+  assert.equal(result.reservationId,b.reservationId,'Known reservation ID must not be replaced by mismatched readback');
+ }
+ f.provider.records.set(b.reservationId,raw);
+ const available=f.provider.availability.bind(f.provider);
+ f.provider.availability=async()=>({status:'available'});
+ assert.equal((await f.service.recheckReview(b.id)).state,'review');
+ f.provider.availability=async()=>{throw Error('timeout');};
+ assert.equal((await f.service.recheckReview(b.id)).state,'review');
+ f.provider.availability=available;f.provider.fault='read';
+ assert.equal((await f.service.recheckReview(b.id)).state,'review');
+ const enabled=new BookingService({...f,env:{BOOKING_ENABLE_LIVE_WRITE:'SAPHIR-09-14-NOV-2026'}});
+ await assert.rejects(()=>enabled.recheckReview(b.id),/disable_writes_before_review/);
+ await f.db.query("UPDATE aq_bookings SET reason='multiple_reservations' WHERE id=$1",[b.id]);
+ await assert.rejects(()=>f.service.recheckReview(b.id),/review_not_eligible/);
+ assert.equal(f.provider.calls,1);
+ assert.equal((await f.db.query('SELECT count(*)::int AS n FROM aq_pilot_slots')).rows[0].n,1);
+});
+test('live adapter refuses missing channel configuration before creating; read remains possible',async()=>{
+ let calls=0;
+ const p=new SmoobuProvider({BOOKING_ENABLE_LIVE_WRITE:'SAPHIR-09-14-NOV-2026'},async()=>{calls++;});
+ await assert.rejects(()=>p.create({}),/website_channel_configuration_missing/);assert.equal(calls,0);
+ const configured=new SmoobuProvider({SMOOBU_WEBSITE_CHANNEL_ID:'700070'});
+ assert.equal(configured.reservationChannelId,700070);
+});

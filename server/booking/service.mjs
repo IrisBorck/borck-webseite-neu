@@ -60,24 +60,34 @@ export class BookingService {
  }
  public(b){requireThat(b,'booking_not_found',404);return {id:b.id,state:b.state,reason:b.reason,reservationId:b.reservation_id,quote:b.quote,mode:this.provider.mode,attempts:b.create_attempts};}
  async status(id){requireThat(uuid(id),'invalid_id');return this.public(await this.store.get(id));}
- async reconcile(id){
+ async recheckReview(id){
+  requireThat(!this.env.BOOKING_ENABLE_LIVE_WRITE,'disable_writes_before_review',403);
+  requireThat(uuid(id),'invalid_id');
+  const b=await this.store.get(id);requireThat(b,'booking_not_found',404);
+  requireThat(b.state==='review'&&b.reason==='reservation_mismatch'&&Number.isSafeInteger(b.reservation_id)&&b.reservation_id>0&&b.create_attempts===1,'review_not_eligible',409);
+  return this.reconcile(id,{review:true});
+ }
+ async reconcile(id,{review=false}={}){
   requireThat(uuid(id),'invalid_id');let b=await this.store.get(id);requireThat(b,'booking_not_found',404);
-  if(['confirmed','rejected','price_changed','review'].includes(b.state))return this.public(b);
+  if(review){
+   requireThat(!this.env.BOOKING_ENABLE_LIVE_WRITE&&b.state==='review'&&b.reason==='reservation_mismatch'&&b.reservation_id>0&&b.create_attempts===1,'review_not_eligible',409);
+  }else if(['confirmed','rejected','price_changed','review'].includes(b.state))return this.public(b);
+  const from=review?['review']:['uncertain','submitting'];
   if(b.state==='checking'){
    if(this.clock()-new Date(b.updated_at)>30000)await this.store.transition(id,['checking'],'rejected','interrupted_before_dispatch',null,{release:true});
    return this.public(await this.store.get(id));
   }
   try{
    const matches=b.reservation_id?[await this.provider.read(b.reservation_id)]:await this.provider.find(b);
-   if(matches.length>1){await this.store.transition(id,['uncertain','submitting'],'review','multiple_reservations');}
+   if(matches.length>1){await this.store.transition(id,from,'review','multiple_reservations');}
    else if(matches.length===1){
-    // Read the individual reservation even if it came from the list endpoint.
-    const raw=await this.provider.read(Number(matches[0].id));
-    if(!matchesReservation(raw,b))await this.store.transition(id,['uncertain','submitting'],'review','reservation_mismatch',Number(raw?.id)||null);
+    // A known ID has already been read; list results require a detail read.
+    const raw=b.reservation_id?matches[0]:await this.provider.read(Number(matches[0].id));
+    if(!matchesReservation(raw,b,this.provider.reservationChannelId))await this.store.transition(id,from,'review','reservation_mismatch',b.reservation_id||(Number.isSafeInteger(Number(raw?.id))&&Number(raw.id)>0?Number(raw.id):null));
     else{
      const a=await this.provider.availability();
-     if(a.status==='unavailable')await this.store.transition(id,['uncertain','submitting'],'confirmed',null,Number(raw.id));
-     else await this.store.transition(id,['uncertain','submitting'],'uncertain','calendar_not_verified',Number(raw.id));
+     if(a.status==='unavailable')await this.store.transition(id,from,'confirmed',null,Number(raw.id));
+     else await this.store.transition(id,from,review?'review':'uncertain',review?'reservation_mismatch':'calendar_not_verified',Number(raw.id));
     }
    }else if(b.state==='uncertain'||this.clock()-new Date(b.updated_at)>30000){
     await this.store.transition(id,['uncertain','submitting'],'uncertain','no_match_yet');

@@ -22,3 +22,11 @@ test('live startup requires HTTPS, PostgreSQL and secret configuration',()=>{
  assert.throws(()=>config({...common,BOOKING_MODE:'simulation',BOOKING_ENABLE_LIVE_WRITE:'anything'}),/simulation_cannot_enable_live/);
  assert.throws(()=>config({...common,BOOKING_MODE:'live',BOOKING_ORIGIN:'https://example.invalid'}),/live_configuration_missing/);
 });
+
+test('live configuration requires explicit positive safe account channel ID',()=>{
+ const env={BOOKING_MODE:'live',BOOKING_ORIGIN:'https://example.invalid',BOOKING_USER:'operator',BOOKING_PASSWORD:randomUUID(),DATABASE_URL:'postgresql:///unused',SMOOBU_API_KEY:'unused',SMOOBU_API_SECRET:'unused',SMOOBU_CUSTOMER_ID:'1',SMOOBU_PRICE_UNIT:'major'};
+ for(const bad of [undefined,'','0','-1','NaN','1.5','9007199254740992']){
+  assert.throws(()=>config({...env,SMOOBU_WEBSITE_CHANNEL_ID:bad}),/website_channel_configuration_missing/);
+ }
+ assert.equal(config({...env,SMOOBU_WEBSITE_CHANNEL_ID:'700070'}).mode,'live');
+});

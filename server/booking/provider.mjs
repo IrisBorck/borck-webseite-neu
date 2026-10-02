@@ -1,9 +1,11 @@
 import {createHash,createHmac,randomUUID} from 'node:crypto';
 import {normalizeAvailability} from '../availability.mjs';
 import {SCOPE,BookingError,requireThat,reservationPayload} from './domain.mjs';
+import {websiteChannelId} from './config.mjs';
 const base='https://login.smoobu.com';
 export class SmoobuProvider {
  constructor(env,fetchImpl=fetch){this.env=env;this.fetch=fetchImpl;this.mode='live';}
+ get reservationChannelId(){return websiteChannelId(this.env);}
  headers(method,url,body){
   const stamp=new Date().toISOString(),nonce=randomUUID();
   const encode=s=>encodeURIComponent(s).replace(/[!'()*]/g,c=>'%'+c.charCodeAt(0).toString(16).toUpperCase());
@@ -28,6 +30,7 @@ export class SmoobuProvider {
  async create(booking){
   // Defense in depth: no write through the adapter unless separately activated.
   requireThat(this.env.BOOKING_ENABLE_LIVE_WRITE==='SAPHIR-09-14-NOV-2026','live_write_disabled',403);
+  websiteChannelId(this.env);
   const result=await this.call('POST','/api/reservations',reservationPayload(booking));
   requireThat(Number.isSafeInteger(result.id)&&result.id>0,'invalid_create_response',502);return result.id;
  }
@@ -46,12 +49,12 @@ export class SmoobuProvider {
 }
 // Local simulation only. No URL, credentials or external network calls.
 export class SimulationProvider {
- constructor(){this.mode='simulation';this.baseCents=55000;this.records=new Map();this.calls=0;this.fault=null;}
+ constructor(){this.reservationChannelId=700070;this.mode='simulation';this.baseCents=55000;this.records=new Map();this.calls=0;this.fault=null;}
  async availability(){if(this.fault==='availability')throw Error('simulated upstream outage');return {status:this.records.size?'unavailable':'available',baseCents:this.baseCents,currency:'EUR'};}
  async create(b){
   this.calls++;const p=reservationPayload(b),id=900000+this.calls;
   if(this.fault==='before_create')throw Error('simulated response loss');
-  this.records.set(id,{id,type:'reservation','is-blocked-booking':false,apartment:{id:p.apartmentId},channel:{id:p.channelId},arrival:p.arrivalDate,departure:p.departureDate,adults:p.adults,children:p.children,email:p.email,notice:p.notice,price:p.price,prepayment:p.prepayment});
+  this.records.set(id,{id,type:'reservation','is-blocked-booking':false,apartment:{id:p.apartmentId},channel:{id:700070,name:'Website'},arrival:p.arrivalDate,departure:p.departureDate,adults:p.adults,children:p.children,email:p.email,notice:p.notice,price:p.price,prepayment:p.prepayment});
   if(this.fault==='after_create')throw Error('simulated response loss');return id;
  }
  async read(id){if(this.fault==='read')throw Error('simulated read failure');return this.records.get(id);}

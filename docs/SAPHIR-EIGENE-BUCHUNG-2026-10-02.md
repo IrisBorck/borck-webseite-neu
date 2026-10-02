@@ -130,3 +130,40 @@ Die Fehlerprüfungen umfassen Doppelübermittlung, zwei konkurrierende Angebote,
 Visuell geprüfte Bilder: `booking-review/desktop-offer.png`, `desktop-result.png`, `mobile-offer.png`, `mobile-result.png`. Sichtbarer Unterkunftspreis 550 € ist ausdrücklich ein Simulationswert, keine aktuelle Live-Zusage.
 
 Iris hat Commit und Push dieses fertiggestellten Standes auf `work/apartments-direkt` am 02.10.2026 ausdrücklich freigegeben. Deployment, Aktivierung des Live-Schreibzugangs, Live-Vorabprüfung und echte Reservierungen bleiben ausgeschlossen.
+
+## Nachtrag 03.10.2026 – Quellenkorrektur, nur lokal vorbereitet
+
+Die vorstehenden Bereitstellungsverbote und Prüfstände beschreiben den ursprünglichen Auftrag vom 02.10.2026. Danach hat Iris die VPS-Bereitstellung und genau eine kontrollierte Reservierung separat freigegeben. Die nachfolgenden Live-Ergebnisse stammen aus ihren Terminalausgaben und Screenshots; die jetzige Korrektur wurde ausschließlich lokal programmiert und getestet, nicht committed, gepusht oder deployed.
+
+### Belegter Live-Befund
+
+- Saphir 09.–14.11.2026, zwei Erwachsene: 550,00 EUR Unterkunft, 24,00 EUR Bettwäsche, 9,00 EUR Handtücher, 33,60 EUR Kurabgabe; Gesamtbetrag 616,60 EUR, Anzahlung 50,00 EUR.
+- Genau ein gespeicherter Anlageversuch. Reservierung in Smoobu vorhanden, Zeitraum im Kalender gesperrt und Availability-API meldet `unavailable`.
+- Gast-E-Mail und eigene Buchungskennung stimmen. Reservierungsart, Apartment, Zeitraum, Erwachsene/Kinder, Gesamtpreis und Anzahlung stimmen ebenfalls.
+- Quelle bei Anlage `channelId=70` (Homepage), im Rückleseformat kontospezifisch `channel.id=159139`, `channel.name=Website`. Der bisherige direkte Vergleich mit 70 verursacht `review / reservation_mismatch`.
+- Vermieterbenachrichtigung und automatische Gästenachricht empfangen. Gästenachricht im Spamordner, sichtbare Zeit etwa fünf Minuten nach Vermieterbenachrichtigung. Name, Apartment, Personen und Daten korrekt ersetzt; Check-in-Link enthalten, Funktion nicht geprüft. Portal-Synchronisation wurde nicht unabhängig an jedem Portal nachgewiesen.
+- Pilotoberfläche nach Abschaltung zeigt deaktivierten Buchungsabschluss. Eigener Vorgang verbleibt auf dem VPS bis zur korrigierten Nachprüfung in `review`.
+
+### Lokale Korrektur
+
+Anlagequelle bleibt 70. Für Rücklesen verlangt die Live-Konfiguration die positive ganzzahlige Servervariable `SMOOBU_WEBSITE_CHANNEL_ID`. Für dieses Konto ist nach dem kontrollierten Test der Wert **159139** verifiziert. Kein automatisches Lernen einer beliebigen zurückgegebenen Quelle, kein Vergleich nur anhand eines frei veränderbaren Namens und kein globaler Ersatz der Anlagequelle durch die Konto-ID. Fehlende/ungültige Konfiguration verhindert den Start des Live-Dienstes; der Adapter verhindert auch einen Anlageversuch ohne gültige Zuordnung.
+
+Die Simulation liefert bewusst eine andere, synthetische Rücklese-ID als die Anlagequelle, damit der ursprüngliche Fehler durch Tests erkennbar bleibt. Alle bisherigen fachlichen Vergleiche bleiben bestehen; zusätzlich muss bei bekannter Reservierungs-ID auch die zurückgegebene ID exakt passen. Ein fehlerhaftes Rücklesen darf die gespeicherte ID nicht ersetzen.
+
+Neuer Verwaltungsbefehl (erst nach separater Bereitstellungsfreigabe auf dem VPS nutzbar):
+
+`node scripts/booking/admin.mjs recheck-review <eigene-Buchungs-UUID>`
+
+Voraussetzungen: `BOOKING_MODE=live`, bestehende Server-/Datenbankkonfiguration einschließlich `SMOOBU_WEBSITE_CHANNEL_ID`, kein gesetztes `BOOKING_ENABLE_LIVE_WRITE`, Status `review`, Grund `reservation_mismatch`, bekannte Reservierungs-ID, genau ein Anlageversuch. Keine neue Migration notwendig.
+
+Dieser Befehl liest die bekannte Reservierung und prüft bei passendem Datenvergleich erneut die Verfügbarkeit. Er erzeugt, ändert oder storniert **keine Smoobu-Reservierung**, darf aber bei erfolgreicher Prüfung den **eigenen Datenbankstatus** auf `confirmed` setzen und protokolliert diesen Übergang in `aq_booking_events`. Die Pilotsperre, der gespeicherte Preis und `create_attempts=1` bleiben erhalten. Bei Datenabweichung, Anbieterfehler oder nicht belegter Kalendersperre bleibt `review` bestehen, der Prozess endet mit Code 2. Andere Prüfgründe, fehlende ID oder aktivierter Schreibschalter werden abgewiesen. Die normale Browser-Nachprüfung hebt `review` weiterhin nicht selbst auf.
+
+### Lokale Ergebnisse dieser Korrektur
+
+- `npm run test:booking`: **20 Tests bestanden**, einschließlich abweichender Konto-ID, falscher Quelle trotz passendem Namen, erfolgreicher kontrollierter Nachprüfung nach Neustart mit deaktiviertem Schreibzugang, Wiederholungs-/Timeoutschutz und unveränderter Pilotsperre. Tests nutzen ausschließlich lokale PGlite-Datenbanken und simulierte Anbieterantworten.
+- Negative Nachprüfungen für falsche Reservierungs-ID, Apartment, Daten, Personen, Preis, Anzahlung, E-Mail, Kennung, Stornierungsart und Blockierungskennzeichen. Anbieter-Lesefehler, Availability-Timeout und weiterhin freier Kalender bestätigen keine Buchung.
+- HTTP-Zugangsschutz-/CSRF-Tests bestanden. Der erste Lauf war durch das Sandbox-Verbot für lokale Listen-Sockets blockiert; nach Freigabe des lokalen Testservers erfolgreich.
+- `ASTRO_TELEMETRY_DISABLED=1 npm run build`: erfolgreich einschließlich der bestehenden Website-Prüfungen und 32 Kurabgabenfälle. Keine Änderung der Oberfläche in diesem Korrekturauftrag; kein zusätzlicher Live-Browsertest.
+- Keine Live-Abfragen oder externen Änderungen während dieser lokalen Korrektur. Kein Commit, Push, Deployment oder Aktivieren des Schreibzugangs.
+
+Nächster freizugebender Schritt: geprüfte Korrektur übertragen, zusätzliche Servervariable sicher setzen, Dienst mit weiterhin deaktiviertem Schreibschalter neu starten und ausschließlich den vorhandenen Vorgang mit dem Verwaltungsbefehl nachprüfen. Erst danach kann Iris die eindeutig zugeordnete Testreservierung manuell bereinigen und die Kalenderfreigabe prüfen. Keine zweite Testreservierung und kein manuelles Überschreiben auf `confirmed` ohne Datenvergleich.
